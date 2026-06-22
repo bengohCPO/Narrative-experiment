@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SDL Adventure Assessment</title>
+  <style>
+    /* ============================================================
+       GLOBAL STYLES & DESIGN TOKENS
+       ============================================================ */
+    :root {
+      --bg:          #f5f0e8;
+      --surface:     #fffdf7;
+      --surface-2:   #f0ebe0;
+      --border:      #d4c9b0;
+      --accent:      #7c6f4e;
+      --accent-dark: #5a4f38;
+      --accent-light:#a89870;
+      --text:        #2e2a22;
+      --text-muted:  #6b6355;
+      --success:     #4a7c59;
+      --warn:        #b5651d;
+      --radius:      10px;
+      --shadow:      0 4px 18px rgba(0,0,0,0.10);
+      --font-story:  Georgia, 'Times New Roman', serif;
+      --font-ui:     'Segoe UI', system-ui, sans-serif;
+      --transition:  0.35s ease;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-ui);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 48px;
+    }
+
+    /* ── Fade transition overlay ── */
+    #fade-overlay {
+      position: fixed; inset: 0;
+      background: var(--bg);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 999;
+      transition: opacity 0.3s ease;
+    }
+    #fade-overlay.active { opacity: 1; pointer-events: all; }
+
+    /* ── Shared card shell ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 36px 40px;
+      width: 100%;
+      max-width: 720px;
+    }
+
+    /* ============================================================
+       START SCREEN
+       ============================================================ */
+    #start-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 20px;
+    }
+    #start-screen .game-title {
+      font-family: var(--font-story);
+      font-size: 2rem;
+      color: var(--accent-dark);
+      line-height: 1.25;
+    }
+    #start-screen .game-subtitle {
+      font-size: 1rem;
+      color: var(--text-muted);
+      max-width: 480px;
+    }
+    #start-screen .divider {
+      width: 60px; height: 3px;
+      background: var(--accent-light);
+      border-radius: 2px;
+    }
+    #start-screen label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    #player-name-input {
+      width: 100%;
+      max-width: 320px;
+      padding: 10px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 1rem;
+      font-family: var(--font-ui);
+      background: var(--surface-2);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    #player-name-input:focus { border-color: var(--accent); }
+
+    /* ============================================================
+       GAME SCREEN
+       ============================================================ */
+    #game-screen { display: none; flex-direction: column; gap: 0; }
+
+    /* Progress bar */
+    .progress-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .progress-bar-track {
+      flex: 1;
+      height: 6px;
+      background: var(--surface-2);
+      border-radius: 3px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-light), var(--accent));
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+    .progress-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    /* Scene image */
+    .scene-image-wrap {
+      width: 100%;
+      border-radius: var(--radius) var(--radius) 0 0;
+      overflow: hidden;
+      max-height: 220px;
+      display: none; /* shown by JS when image exists */
+    }
+    .scene-image-wrap img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Scene card body */
+    .scene-body { padding: 32px 36px 28px; }
+
+    .scene-title {
+      font-family: var(--font-story);
+      font-size: 1.45rem;
+      color: var(--accent-dark);
+      margin-bottom: 16px;
+      line-height: 1.3;
+    }
+    .scene-text {
+      font-family: var(--font-story);
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: var(--text);
+      margin-bottom: 28px;
+    }
+
+    /* Choices */
+    .choices-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .choices-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .choice-btn {
+      background: var(--surface-2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 20px;
+      font-family: var(--font-ui);
+      font-size: 0.97rem;
+      color: var(--text);
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.18s, border-color 0.18s, transform 0.12s, box-shadow 0.18s;
+      line-height: 1.45;
+    }
+    .choice-btn:hover {
+      background: var(--accent-light);
+      border-color: var(--accent);
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(124,111,78,0.22);
+    }
+    .choice-btn:active { transform: translateY(0); }
+
+    /* Restart button */
+    .restart-btn {
+      margin-top: 18px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      cursor: pointer;
+      text-decoration: underline;
+      font-family: var(--font-ui);
+      padding: 4px 0;
+      transition: color 0.15s;
+    }
+    .restart-btn:hover { color: var(--warn); }
+
+    /* ============================================================
+       PRIMARY BUTTON (shared)
+       ============================================================ */
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      padding: 13px 32px;
+      font-size: 1rem;
+      font-family: var(--font-ui);
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
+      box-shadow: 0 3px 10px rgba(124,111,78,0.25);
+    }
+    .btn-primary:hover {
+      background: var(--accent-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(90,79,56,0.3);
+    }
+    .btn-primary:active { transform: translateY(0); }
+
+    /* ============================================================
+       REPORT SCREEN
+       ============================================================ */
+    #report-screen {
+      display: none;
+      flex-direction: column;
+      gap: 28px;
+      max-width: 760px;
+    }
+
+    .report-header {
+      text-align: center;
+      padding-bottom: 20px;
+      border-bottom: 2px solid var(--border);
+    }
+    .report-header .report-badge {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+    .report-header h1 {
+      font-family: var(--font-story);
+      font-size: 1.9rem;
+      color: var(--accent-dark);
+      margin-bottom: 6px;
+    }
+    .report-header .report-meta {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    /* Overall profile */
+    .report-section-title {
+      font-family: var(--font-story);
+      font-size: 1.2rem;
+      color: var(--accent-dark);
+      margin-bottom: 14px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .overall-profile {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+    #radar-canvas {
+      flex-shrink: 0;
+      border-radius: var(--radius);
+    }
+    .overall-level-box {
+      flex: 1;
+      min-width: 180px;
+    }
+    .overall-level-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .overall-level-value {
+      font-family: var(--font-story);
+      font-size: 2rem;
+      color: var(--accent-dark);
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    .overall-level-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    /* Dimension table */
+    .dimension-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .dim-card {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 22px;
+    }
+    .dim-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .dim-name {
+      font-weight: 700;
+      font-size: 0.97rem;
+      color: var(--text);
+    }
+    .dim-level-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 12px;
+      white-space: nowrap;
+    }
+    .level-beginning  { background: #f5ddd0; color: #8b3a1a; }
+    .level-developing { background: #fef3cd; color: #7a5c00; }
+    .level-established{ background: #d4edda; color: #1e5c35; }
+    .level-advanced   { background: #cce5ff; color: #1a4a7a; }
+
+    .dim-desc {
+      font-size: 0.83rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+    .dim-level-desc {
+      font-size: 0.88rem;
+      color: var(--text);
+      font-style: italic;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    /* Score bar */
+    .score-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .score-bar-track {
+      flex: 1;
+      height: 8px;
+      background: var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .score-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--accent-light), var(--accent));
+      transition: width 0.8s ease;
+    }
+    .score-bar-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    /* Narrative summary */
+    .narrative-summary {
+      font-family: var(--font-story);
+      font-size: 1rem;
+      line-height: 1.8;
+      color: var(--text);
+      background: var(--surface-2);
+      border-left: 4px solid var(--accent-light);
+      padding: 18px 22px;
+      border-radius: 0 var(--radius) var(--radius) 0;
+    }
+
+    /* Recommendations */
+    .rec-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .rec-item {
+      background: #fff8f0;
+      border: 1px solid #e8d5b8;
+      border-radius: var(--radius);
+      padding: 14px 18px;
+    }
+    .rec-item-title {
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: var(--warn);
+      margin-bottom: 4px;
+    }
+    .rec-item-text {
+      font-size: 0.88rem;
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    /* Report actions */
+    .report-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* ============================================================
+       PRINT STYLES
+       ============================================================ */
+    @media print {
+      body { background: #fff; padding: 0; }
+      #fade-overlay, #start-screen, #game-screen,
+      .report-actions, .restart-btn { display: none !important; }
+      #report-screen {
+        display: flex !important;
+        max-width: 100%;
+        gap: 20px;
+      }
+      .card { box-shadow: none; border: 1px solid #ccc; }
+      .dim-card { break-inside: avoid; }
+    }
+
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 600px) {
+      .card { padding: 22px 18px; }
+      .scene-body { padding: 22px 18px 20px; }
+      .overall-profile { flex-direction: column; align-items: center; }
+      #radar-canvas { width: 240px !important; height: 240px !important; }
+      .report-header h1 { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Fade transition overlay -->
+<div id="fade-overlay"></div>
+
+<!-- ============================================================
+     START SCREEN
+     ============================================================ -->
+<div id="start-screen" class="card">
+  <div class="game-title" id="display-game-title">Loading…</div>
+  <div class="divider"></div>
+  <p class="game-subtitle" id="display-game-subtitle"></p>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:100%">
+    <label for="player-name-input">Your Name</label>
+    <input type="text" id="player-name-input" placeholder="Enter your name…" maxlength="60" autocomplete="off" />
+  </div>
+  <button class="btn-primary" id="start-btn" onclick="startGame()">Begin Your Journey</button>
+</div>
+
+<!-- ============================================================
+     GAME SCREEN
+     ============================================================ -->
+<div id="game-screen" class="card" style="padding:0;overflow:hidden;">
+  <div style="padding: 20px 28px 0;">
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+      <span class="progress-label" id="progress-label">Scene 1</span>
+    </div>
+  </div>
+  <div class="scene-image-wrap" id="scene-image-wrap">
+    <img id="scene-image" src="" alt="Scene illustration" />
+  </div>
+  <div class="scene-body">
+    <h2 class="scene-title" id="scene-title"></h2>
+    <p class="scene-text" id="scene-text"></p>
+    <div class="choices-label">What do you do?</div>
+    <div class="choices-list" id="choices-list"></div>
+    <button class="restart-btn" onclick="confirmRestart()">↩ Restart from beginning</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     REPORT SCREEN
+     ============================================================ -->
+<div id="report-screen">
+
+  <!-- Report card wrapper -->
+  <div class="card" style="padding: 32px 36px;">
+
+    <!-- 1. Header -->
+    <div class="report-header">
+      <div class="report-badge">SDL Assessment Report</div>
+      <h1 id="report-title"></h1>
+      <div class="report-meta" id="report-meta"></div>
+    </div>
+
+    <!-- 2. Overall SDL Profile -->
+    <div style="margin-top:28px;">
+      <div class="report-section-title">Overall SDL Profile</div>
+      <div class="overall-profile">
+        <canvas id="radar-canvas" width="280" height="280"></canvas>
+        <div class="overall-level-box">
+          <div class="overall-level-label">Overall SDL Level</div>
+          <div class="overall-level-value" id="overall-level-value"></div>
+          <div class="overall-level-desc" id="overall-level-desc"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Dimension Breakdown -->
+    <div style="margin-top:28px;">
+      <div class="report-section-title">Dimension Breakdown</div>
+      <div class="dimension-cards" id="dimension-cards"></div>
+    </div>
+
+    <!-- 4. Narrative Summary -->
+    <div style="margin-top:28px;">
+      <div class="report-section-title">Your Learning Profile</div>
+      <div class="narrative-summary" id="narrative-summary"></div>
+    </div>
+
+    <!-- 5. Recommendations -->
+    <div style="margin-top:28px;" id="recommendations-section">
+      <div class="report-section-title">Growth Opportunities</div>
+      <div class="rec-list" id="rec-list"></div>
+    </div>
+
+    <!-- 6. Actions -->
+    <div class="report-actions" style="margin-top:28px;">
+      <button class="btn-primary" onclick="window.print()">🖨 Print Report</button>
+      <button class="btn-primary" style="background:var(--success);" onclick="confirmRestart()">↩ Play Again</button>
+    </div>
+
+  </div>
+</div>
+
+
+<script>
+/* ================================================================
+   ████████████████████████████████████████████████████████████████
+   SECTION 1: CONFIG — SDL Criteria & Game Settings
+   ████████████████████████████████████████████████████████████████
+
+   HOW TO EDIT THIS SECTION:
+   • Change GAME_CONFIG.title and .subtitle to match your assessment.
+   • In SDL_CRITERIA, each key is a dimension ID (used in STORY_NODES).
+   • Add, remove, or rename dimensions as needed.
+   • Weights: 1 = minor, 2 = moderate, 3 = most important.
+   • Each level has a `label` (short name) and `descriptor` (shown in report).
+   ================================================================ */
+
+const GAME_CONFIG = {
+  // ✏️ EDIT: Change the title and subtitle of your assessment
+  title:    "The Learning Expedition",
+  subtitle: "An interactive adventure that reveals how you approach self-directed learning. Your choices shape the story — and your profile.",
+};
+
+const SDL_CRITERIA = {
+
+  // ──────────────────────────────────────────────────────────────
+  // ✏️ EDIT: Replace this with your own SDL dimension
+  // Dimension 1: Goal Setting & Planning
+  // ──────────────────────────────────────────────────────────────
+  goal_setting: {
+    label:       "Goal Setting & Planning",
+    description: "The ability to identify learning goals, break them into actionable steps, and plan effectively for achieving them.",
+    // ✏️ EDIT: Adjust weight (1 = low, 2 = medium, 3 = high importance)
+    weight: 3,
+    levels: {
+      beginning: {
+        label:      "Beginning",
+        descriptor: "Sets vague or no goals; relies on others to define direction and next steps."
+      },
+      developing: {
+        label:      "Developing",
+        descriptor: "Sets broad goals but struggles to break them into concrete, actionable plans."
+      },
+      established: {
+        label:      "Established",
+        descriptor: "Sets clear, specific goals and creates structured plans with milestones."
+      },
+      advanced: {
+        label:      "Advanced",
+        descriptor: "Proactively sets ambitious, well-defined goals; anticipates obstacles and builds adaptive plans."
+      }
+    }
+  },
+
+  // ──────────────────────────────────────────────────────────────
+  // ✏️ EDIT: Replace this with your own SDL dimension
+  // Dimension 2: Self-Monitoring & Reflection
+  // ──────────────────────────────────────────────────────────────
+  self_monitoring: {
+    label:       "Self-Monitoring & Reflection",
+    description: "The capacity to track one's own progress, notice gaps in understanding, and reflect critically on learning experiences.",
+    // ✏️ EDIT: Adjust weight
+    weight: 2,
+    levels: {
+      beginning: {
+        label:      "Beginning",
+        descriptor: "Rarely checks own progress; moves forward without reflecting on what is or isn't working."
+      },
+      developing: {
+        label:      "Developing",
+        descriptor: "Occasionally reflects on progress but does not consistently use insights to adjust approach."
+      },
+      established: {
+        label:      "Established",
+        descriptor: "Regularly monitors progress and uses reflection to refine strategies and address gaps."
+      },
+      advanced: {
+        label:      "Advanced",
+        descriptor: "Deeply reflective; systematically evaluates learning processes and applies insights to future challenges."
+      }
+    }
+  },
+
+  // ──────────────────────────────────────────────────────────────
+  // ✏️ EDIT: Replace this with your own SDL dimension
+  // Dimension 3: Resource Seeking & Initiative
+  // ──────────────────────────────────────────────────────────────
+  resource_seeking: {
+    label:       "Resource Seeking & Initiative",
+    description: "The drive to proactively identify, evaluate, and use diverse resources and opportunities to support learning.",
+    // ✏️ EDIT: Adjust weight
+    weight: 2,
+    levels: {
+      beginning: {
+        label:      "Beginning",
+        descriptor: "Waits to be given resources; does not independently seek out information or support."
+      },
+      developing: {
+        label:      "Developing",
+        descriptor: "Uses provided resources but rarely seeks additional materials or perspectives independently."
+      },
+      established: {
+        label:      "Established",
+        descriptor: "Actively seeks out relevant resources and opportunities beyond what is provided."
+      },
+      advanced: {
+        label:      "Advanced",
+        descriptor: "Curates a rich, diverse set of resources; critically evaluates sources and synthesises multiple perspectives."
+      }
+    }
+  },
+
+  // ──────────────────────────────────────────────────────────────
+  // ✏️ EDIT: Replace this with your own SDL dimension
+  // Dimension 4: Persistence & Adaptability
+  // ──────────────────────────────────────────────────────────────
+  persistence: {
+    label:       "Persistence & Adaptability",
+    description: "The ability to maintain effort in the face of difficulty, adapt strategies when progress stalls, and recover from setbacks.",
+    // ✏️ EDIT: Adjust weight
+    weight: 2,
+    levels: {
+      beginning: {
+        label:      "Beginning",
+        descriptor: "Gives up quickly when facing obstacles; struggles to adapt when initial approaches fail."
+      },
+      developing: {
+        label:      "Developing",
+        descriptor: "Persists with some effort but tends to repeat the same approach even when it isn't working."
+      },
+      established: {
+        label:      "Established",
+        descriptor: "Maintains effort through challenges and adjusts strategies when needed."
+      },
+      advanced: {
+        label:      "Advanced",
+        descriptor: "Demonstrates strong resilience; treats setbacks as learning opportunities and pivots strategies fluidly."
+      }
+    }
+  }
+
+  // ──────────────────────────────────────────────────────────────
+  // ✏️ EDIT: Add more dimensions here following the same pattern.
+  // Remember to add a comma after the closing } of the dimension above.
+  // Example:
+  //
+  // ,
+  // my_new_dimension: {
+  //   label: "My New Dimension",
+  //   description: "What this dimension measures.",
+  //   weight: 2,
+  //   levels: {
+  //     beginning:   { label: "Beginning",   descriptor: "..." },
+  //     developing:  { label: "Developing",  descriptor: "..." },
+  //     established: { label: "Established", descriptor: "..." },
+  //     advanced:    { label: "Advanced",    descriptor: "..." }
+  //   }
+  // }
+  // ──────────────────────────────────────────────────────────────
+
+};
+
+
+/* ================================================================
+   ████████████████████████████████████████████████████████████████
+   SECTION 2: STORY — Narrative Nodes & Branches
+   ████████████████████████████████████████████████████████████████
+
+   HOW TO EDIT THIS SECTION:
+   • Each entry in STORY_NODES is one scene.
+   • The key (e.g. "scene_start") is the node's ID — used in `next` fields.
+   • `choices` is an array; each choice has a `label`, a `next` node ID,
+     and a `scores` object mapping dimension IDs to a score of 1–4.
+   • A node with NO `choices` (or an empty array) ends the game and
+     triggers the report.
+   • The game always starts at the node with id "scene_start".
+   ================================================================ */
+
+const STORY_NODES = {
+
+  // ════════════════════════════════════════════════════════════════
+  // SCENE 1 — The Starting Point
+  // ════════════════════════════════════════════════════════════════
+  scene_start: {
+    id:    "scene_start",
+    // ✏️ EDIT: Replace with your scene's title
+    title: "The Crossroads of Learning",
+    // ✏️ EDIT: Replace with your scene's narrative text
+    text:  `You stand at the edge of a vast, uncharted forest — the Forest of Knowledge. 
+Your mentor hands you a worn leather satchel and says: "Everything you need to 
+master the path ahead is out there. But the path itself? That's yours to find."
+
+You glance at the two trails ahead. One is well-worn and clearly marked. 
+The other disappears into the undergrowth, unmarked but intriguing.
+
+How do you begin?`,
+    // ✏️ EDIT: Optional — set to a filename like "scene1.jpg" if you have images,
+    //          or leave as empty string "" to show no image.
+    image: "",
+    choices: [
+      {
+        // ✏️ EDIT: Replace with your choice's button text
+        label: "Pull out a blank map and sketch a rough plan before taking a step.",
+        // ✏️ EDIT: Replace with the ID of the next scene this choice leads to
+        next:  "scene_2a",
+        // ✏️ EDIT: Map this choice to SDL dimensions and score levels (1–4).
+        //          Only include dimensions this choice is relevant to.
+        scores: {
+          goal_setting
