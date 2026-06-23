@@ -1,788 +1,1057 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SDL Adventure Assessment</title>
-  <style>
-    /* ============================================================
-       GLOBAL STYLES & DESIGN TOKENS
-       ============================================================ */
-    :root {
-      --bg:          #f5f0e8;
-      --surface:     #fffdf7;
-      --surface-2:   #f0ebe0;
-      --border:      #d4c9b0;
-      --accent:      #7c6f4e;
-      --accent-dark: #5a4f38;
-      --accent-light:#a89870;
-      --text:        #2e2a22;
-      --text-muted:  #6b6355;
-      --success:     #4a7c59;
-      --warn:        #b5651d;
-      --radius:      10px;
-      --shadow:      0 4px 18px rgba(0,0,0,0.10);
-      --font-story:  Georgia, 'Times New Roman', serif;
-      --font-ui:     'Segoe UI', system-ui, sans-serif;
-      --transition:  0.35s ease;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDL Assessment Narrative Game</title>
+    
+    <style>
+        /* ═══════════════════════════════════════════════════════════════
+           CSS THEME & VARIABLES
+           Edit these to customize the visual appearance
+           ═══════════════════════════════════════════════════════════════ */
+        
+        :root {
+            --primary: #2c3e50;        /* Dark blue-grey */
+            --accent: #d4a574;         /* Warm bronze/tan */
+            --bg-light: #f5f1e8;       /* Warm cream */
+            --text-dark: #2c3e50;
+            --text-muted: #666;
+            --border: #d0c4b8;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --shadow: rgba(0,0,0,0.1);
+        }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-ui);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 24px 16px 48px;
-    }
+        html, body {
+            height: 100%;
+            font-family: 'Georgia', serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+        }
 
-    /* ── Fade transition overlay ── */
-    #fade-overlay {
-      position: fixed; inset: 0;
-      background: var(--bg);
-      opacity: 0;
-      pointer-events: none;
-      z-index: 999;
-      transition: opacity 0.3s ease;
-    }
-    #fade-overlay.active { opacity: 1; pointer-events: all; }
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
 
-    /* ── Shared card shell ── */
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 36px 40px;
-      width: 100%;
-      max-width: 720px;
-    }
+        #app {
+            width: 100%;
+            max-width: 900px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px var(--shadow);
+            overflow: hidden;
+        }
 
-    /* ============================================================
-       START SCREEN
-       ============================================================ */
-    #start-screen {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      gap: 20px;
-    }
-    #start-screen .game-title {
-      font-family: var(--font-story);
-      font-size: 2rem;
-      color: var(--accent-dark);
-      line-height: 1.25;
-    }
-    #start-screen .game-subtitle {
-      font-size: 1rem;
-      color: var(--text-muted);
-      max-width: 480px;
-    }
-    #start-screen .divider {
-      width: 60px; height: 3px;
-      background: var(--accent-light);
-      border-radius: 2px;
-    }
-    #start-screen label {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-    #player-name-input {
-      width: 100%;
-      max-width: 320px;
-      padding: 10px 16px;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      font-size: 1rem;
-      font-family: var(--font-ui);
-      background: var(--surface-2);
-      color: var(--text);
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    #player-name-input:focus { border-color: var(--accent); }
+        /* Welcome/Start Screen */
+        #welcome-screen {
+            padding: 60px 40px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary) 0%, rgba(44,62,80,0.8) 100%);
+            color: white;
+        }
 
-    /* ============================================================
-       GAME SCREEN
-       ============================================================ */
-    #game-screen { display: none; flex-direction: column; gap: 0; }
+        #welcome-screen h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            font-weight: normal;
+            letter-spacing: 1px;
+        }
 
-    /* Progress bar */
-    .progress-bar-wrap {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-    .progress-bar-track {
-      flex: 1;
-      height: 6px;
-      background: var(--surface-2);
-      border-radius: 3px;
-      border: 1px solid var(--border);
-      overflow: hidden;
-    }
-    .progress-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent-light), var(--accent));
-      border-radius: 3px;
-      transition: width 0.5s ease;
-    }
-    .progress-label {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      white-space: nowrap;
-    }
+        #welcome-screen p {
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
 
-    /* Scene image */
-    .scene-image-wrap {
-      width: 100%;
-      border-radius: var(--radius) var(--radius) 0 0;
-      overflow: hidden;
-      max-height: 220px;
-      display: none; /* shown by JS when image exists */
-    }
-    .scene-image-wrap img {
-      width: 100%;
-      height: 220px;
-      object-fit: cover;
-      display: block;
-    }
+        .input-group {
+            margin-bottom: 25px;
+        }
 
-    /* Scene card body */
-    .scene-body { padding: 32px 36px 28px; }
+        .input-group label {
+            display: block;
+            font-size: 1em;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
 
-    .scene-title {
-      font-family: var(--font-story);
-      font-size: 1.45rem;
-      color: var(--accent-dark);
-      margin-bottom: 16px;
-      line-height: 1.3;
-    }
-    .scene-text {
-      font-family: var(--font-story);
-      font-size: 1.05rem;
-      line-height: 1.8;
-      color: var(--text);
-      margin-bottom: 28px;
-    }
+        .input-group input {
+            width: 100%;
+            max-width: 300px;
+            padding: 12px 15px;
+            font-size: 1em;
+            border: 2px solid var(--accent);
+            border-radius: 4px;
+            font-family: 'Arial', sans-serif;
+            background: rgba(255,255,255,0.9);
+        }
 
-    /* Choices */
-    .choices-label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-    }
-    .choices-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .choice-btn {
-      background: var(--surface-2);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px 20px;
-      font-family: var(--font-ui);
-      font-size: 0.97rem;
-      color: var(--text);
-      cursor: pointer;
-      text-align: left;
-      transition: background 0.18s, border-color 0.18s, transform 0.12s, box-shadow 0.18s;
-      line-height: 1.45;
-    }
-    .choice-btn:hover {
-      background: var(--accent-light);
-      border-color: var(--accent);
-      color: #fff;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(124,111,78,0.22);
-    }
-    .choice-btn:active { transform: translateY(0); }
+        .input-group input:focus {
+            outline: none;
+            box-shadow: 0 0 8px rgba(212, 165, 116, 0.5);
+        }
 
-    /* Restart button */
-    .restart-btn {
-      margin-top: 18px;
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      font-size: 0.82rem;
-      cursor: pointer;
-      text-decoration: underline;
-      font-family: var(--font-ui);
-      padding: 4px 0;
-      transition: color 0.15s;
-    }
-    .restart-btn:hover { color: var(--warn); }
+        button {
+            font-family: 'Arial', sans-serif;
+            padding: 12px 30px;
+            font-size: 1em;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
-    /* ============================================================
-       PRIMARY BUTTON (shared)
-       ============================================================ */
-    .btn-primary {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: var(--radius);
-      padding: 13px 32px;
-      font-size: 1rem;
-      font-family: var(--font-ui);
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
-      box-shadow: 0 3px 10px rgba(124,111,78,0.25);
-    }
-    .btn-primary:hover {
-      background: var(--accent-dark);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgba(90,79,56,0.3);
-    }
-    .btn-primary:active { transform: translateY(0); }
+        button.primary {
+            background-color: var(--accent);
+            color: white;
+        }
 
-    /* ============================================================
-       REPORT SCREEN
-       ============================================================ */
-    #report-screen {
-      display: none;
-      flex-direction: column;
-      gap: 28px;
-      max-width: 760px;
-    }
+        button.primary:hover {
+            background-color: #c49563;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(212, 165, 116, 0.4);
+        }
 
-    .report-header {
-      text-align: center;
-      padding-bottom: 20px;
-      border-bottom: 2px solid var(--border);
-    }
-    .report-header .report-badge {
-      display: inline-block;
-      background: var(--accent);
-      color: #fff;
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      padding: 4px 14px;
-      border-radius: 20px;
-      margin-bottom: 12px;
-    }
-    .report-header h1 {
-      font-family: var(--font-story);
-      font-size: 1.9rem;
-      color: var(--accent-dark);
-      margin-bottom: 6px;
-    }
-    .report-header .report-meta {
-      font-size: 0.88rem;
-      color: var(--text-muted);
-    }
+        button.secondary {
+            background-color: var(--primary);
+            color: white;
+            margin-top: 15px;
+        }
 
-    /* Overall profile */
-    .report-section-title {
-      font-family: var(--font-story);
-      font-size: 1.2rem;
-      color: var(--accent-dark);
-      margin-bottom: 14px;
-      padding-bottom: 6px;
-      border-bottom: 1px solid var(--border);
-    }
+        button.secondary:hover {
+            background-color: #34495e;
+            transform: translateY(-2px);
+        }
 
-    .overall-profile {
-      display: flex;
-      align-items: center;
-      gap: 32px;
-      flex-wrap: wrap;
-    }
-    #radar-canvas {
-      flex-shrink: 0;
-      border-radius: var(--radius);
-    }
-    .overall-level-box {
-      flex: 1;
-      min-width: 180px;
-    }
-    .overall-level-label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-    }
-    .overall-level-value {
-      font-family: var(--font-story);
-      font-size: 2rem;
-      color: var(--accent-dark);
-      font-weight: bold;
-      margin-bottom: 8px;
-    }
-    .overall-level-desc {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      line-height: 1.55;
-    }
+        /* Game Scene */
+        #game-screen {
+            display: none;
+            padding: 50px 40px;
+            animation: fadeIn 0.5s ease;
+        }
 
-    /* Dimension table */
-    .dimension-cards {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    .dim-card {
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px 22px;
-    }
-    .dim-card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 12px;
-      margin-bottom: 8px;
-      flex-wrap: wrap;
-    }
-    .dim-name {
-      font-weight: 700;
-      font-size: 0.97rem;
-      color: var(--text);
-    }
-    .dim-level-badge {
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      padding: 3px 10px;
-      border-radius: 12px;
-      white-space: nowrap;
-    }
-    .level-beginning  { background: #f5ddd0; color: #8b3a1a; }
-    .level-developing { background: #fef3cd; color: #7a5c00; }
-    .level-established{ background: #d4edda; color: #1e5c35; }
-    .level-advanced   { background: #cce5ff; color: #1a4a7a; }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
 
-    .dim-desc {
-      font-size: 0.83rem;
-      color: var(--text-muted);
-      margin-bottom: 10px;
-      line-height: 1.5;
-    }
-    .dim-level-desc {
-      font-size: 0.88rem;
-      color: var(--text);
-      font-style: italic;
-      margin-bottom: 12px;
-      line-height: 1.5;
-    }
+        .progress-bar {
+            font-size: 0.9em;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-family: 'Arial', sans-serif;
+        }
 
-    /* Score bar */
-    .score-bar-wrap {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .score-bar-track {
-      flex: 1;
-      height: 8px;
-      background: var(--border);
-      border-radius: 4px;
-      overflow: hidden;
-    }
-    .score-bar-fill {
-      height: 100%;
-      border-radius: 4px;
-      background: linear-gradient(90deg, var(--accent-light), var(--accent));
-      transition: width 0.8s ease;
-    }
-    .score-bar-label {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      white-space: nowrap;
-    }
+        .scene-title {
+            font-size: 2em;
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-weight: normal;
+            letter-spacing: 0.5px;
+        }
 
-    /* Narrative summary */
-    .narrative-summary {
-      font-family: var(--font-story);
-      font-size: 1rem;
-      line-height: 1.8;
-      color: var(--text);
-      background: var(--surface-2);
-      border-left: 4px solid var(--accent-light);
-      padding: 18px 22px;
-      border-radius: 0 var(--radius) var(--radius) 0;
-    }
+        .scene-image {
+            width: 100%;
+            max-height: 300px;
+            background-color: var(--bg-light);
+            border: 2px dashed var(--border);
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-style: italic;
+            font-size: 0.9em;
+        }
 
-    /* Recommendations */
-    .rec-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .rec-item {
-      background: #fff8f0;
-      border: 1px solid #e8d5b8;
-      border-radius: var(--radius);
-      padding: 14px 18px;
-    }
-    .rec-item-title {
-      font-weight: 700;
-      font-size: 0.88rem;
-      color: var(--warn);
-      margin-bottom: 4px;
-    }
-    .rec-item-text {
-      font-size: 0.88rem;
-      color: var(--text);
-      line-height: 1.55;
-    }
+        .scene-text {
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: var(--text-dark);
+            margin-bottom: 40px;
+        }
 
-    /* Report actions */
-    .report-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
+        .choices-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
 
-    /* ============================================================
-       PRINT STYLES
-       ============================================================ */
-    @media print {
-      body { background: #fff; padding: 0; }
-      #fade-overlay, #start-screen, #game-screen,
-      .report-actions, .restart-btn { display: none !important; }
-      #report-screen {
-        display: flex !important;
-        max-width: 100%;
-        gap: 20px;
-      }
-      .card { box-shadow: none; border: 1px solid #ccc; }
-      .dim-card { break-inside: avoid; }
-    }
+        .choice-button {
+            background-color: var(--bg-light);
+            color: var(--primary);
+            border: 2px solid var(--border);
+            padding: 15px 20px;
+            text-align: left;
+            font-size: 1em;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-family: 'Arial', sans-serif;
+        }
 
-    /* ============================================================
-       RESPONSIVE
-       ============================================================ */
-    @media (max-width: 600px) {
-      .card { padding: 22px 18px; }
-      .scene-body { padding: 22px 18px 20px; }
-      .overall-profile { flex-direction: column; align-items: center; }
-      #radar-canvas { width: 240px !important; height: 240px !important; }
-      .report-header h1 { font-size: 1.5rem; }
-    }
-  </style>
+        .choice-button:hover {
+            background-color: var(--accent);
+            color: white;
+            border-color: var(--accent);
+            transform: translateX(10px);
+        }
+
+        /* Report Screen */
+        #report-screen {
+            display: none;
+            padding: 40px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .report-header {
+            text-align: center;
+            border-bottom: 3px solid var(--accent);
+            padding-bottom: 30px;
+            margin-bottom: 40px;
+        }
+
+        .report-header h1 {
+            font-size: 2em;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .report-header .meta {
+            font-size: 0.95em;
+            color: var(--text-muted);
+            font-family: 'Arial', sans-serif;
+        }
+
+        .report-section {
+            margin-bottom: 40px;
+        }
+
+        .report-section h2 {
+            font-size: 1.5em;
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-weight: normal;
+            border-left: 4px solid var(--accent);
+            padding-left: 15px;
+        }
+
+        .overall-profile {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        #overall-chart {
+            max-width: 500px;
+            margin: 20px auto;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        .overall-level {
+            font-size: 1.8em;
+            color: var(--accent);
+            font-weight: bold;
+            margin-top: 20px;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .dimension-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.95em;
+        }
+
+        .dimension-table th,
+        .dimension-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .dimension-table th {
+            background-color: var(--bg-light);
+            color: var(--primary);
+            font-weight: bold;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .dimension-table tr:hover {
+            background-color: rgba(212, 165, 116, 0.1);
+        }
+
+        .score-bar {
+            width: 100%;
+            height: 20px;
+            background-color: var(--bg-light);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .score-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent) 0%, #d4a574 100%);
+            transition: width 0.5s ease;
+        }
+
+        .narrative-summary {
+            background-color: var(--bg-light);
+            padding: 20px;
+            border-left: 4px solid var(--accent);
+            border-radius: 4px;
+            line-height: 1.8;
+            color: var(--text-dark);
+            font-size: 1em;
+        }
+
+        .recommendations {
+            background-color: rgba(243, 156, 18, 0.1);
+            padding: 20px;
+            border-radius: 4px;
+            border-left: 4px solid var(--warning);
+            margin-top: 15px;
+        }
+
+        .recommendations h3 {
+            color: var(--warning);
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .recommendation-item {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+        .recommendation-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                padding: 0;
+            }
+
+            #app {
+                box-shadow: none;
+                max-width: 100%;
+            }
+
+            #welcome-screen,
+            #game-screen,
+            .action-buttons {
+                display: none !important;
+            }
+
+            #report-screen {
+                display: block !important;
+                padding: 0;
+            }
+
+            .report-section {
+                page-break-inside: avoid;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            #game-screen,
+            #report-screen {
+                padding: 30px 20px;
+            }
+
+            .scene-title {
+                font-size: 1.5em;
+            }
+
+            .report-header h1 {
+                font-size: 1.5em;
+            }
+
+            .report-section h2 {
+                font-size: 1.2em;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .dimension-table {
+                font-size: 0.85em;
+            }
+
+            .dimension-table th,
+            .dimension-table td {
+                padding: 8px;
+            }
+        }
+    </style>
 </head>
 <body>
-
-<!-- Fade transition overlay -->
-<div id="fade-overlay"></div>
-
-<!-- ============================================================
-     START SCREEN
-     ============================================================ -->
-<div id="start-screen" class="card">
-  <div class="game-title" id="display-game-title">Loading…</div>
-  <div class="divider"></div>
-  <p class="game-subtitle" id="display-game-subtitle"></p>
-  <div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:100%">
-    <label for="player-name-input">Your Name</label>
-    <input type="text" id="player-name-input" placeholder="Enter your name…" maxlength="60" autocomplete="off" />
-  </div>
-  <button class="btn-primary" id="start-btn" onclick="startGame()">Begin Your Journey</button>
-</div>
-
-<!-- ============================================================
-     GAME SCREEN
-     ============================================================ -->
-<div id="game-screen" class="card" style="padding:0;overflow:hidden;">
-  <div style="padding: 20px 28px 0;">
-    <div class="progress-bar-wrap">
-      <div class="progress-bar-track">
-        <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
-      </div>
-      <span class="progress-label" id="progress-label">Scene 1</span>
-    </div>
-  </div>
-  <div class="scene-image-wrap" id="scene-image-wrap">
-    <img id="scene-image" src="" alt="Scene illustration" />
-  </div>
-  <div class="scene-body">
-    <h2 class="scene-title" id="scene-title"></h2>
-    <p class="scene-text" id="scene-text"></p>
-    <div class="choices-label">What do you do?</div>
-    <div class="choices-list" id="choices-list"></div>
-    <button class="restart-btn" onclick="confirmRestart()">↩ Restart from beginning</button>
-  </div>
-</div>
-
-<!-- ============================================================
-     REPORT SCREEN
-     ============================================================ -->
-<div id="report-screen">
-
-  <!-- Report card wrapper -->
-  <div class="card" style="padding: 32px 36px;">
-
-    <!-- 1. Header -->
-    <div class="report-header">
-      <div class="report-badge">SDL Assessment Report</div>
-      <h1 id="report-title"></h1>
-      <div class="report-meta" id="report-meta"></div>
-    </div>
-
-    <!-- 2. Overall SDL Profile -->
-    <div style="margin-top:28px;">
-      <div class="report-section-title">Overall SDL Profile</div>
-      <div class="overall-profile">
-        <canvas id="radar-canvas" width="280" height="280"></canvas>
-        <div class="overall-level-box">
-          <div class="overall-level-label">Overall SDL Level</div>
-          <div class="overall-level-value" id="overall-level-value"></div>
-          <div class="overall-level-desc" id="overall-level-desc"></div>
+    <div id="app">
+        <!-- Welcome Screen -->
+        <div id="welcome-screen">
+            <h1>Learning Journey</h1>
+            <p>Discover your Self-Directed Learning profile through an interactive narrative.</p>
+            <div class="input-group">
+                <label for="player-name">What is your name?</label>
+                <input type="text" id="player-name" placeholder="Enter your name" />
+            </div>
+            <button class="primary" onclick="gameEngine.startGame()">Begin Your Journey</button>
         </div>
-      </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen">
+            <div class="progress-bar">
+                <span id="progress-text">Scene 1</span>
+            </div>
+            <h1 class="scene-title" id="scene-title">Loading...</h1>
+            <div class="scene-image" id="scene-image"></div>
+            <p class="scene-text" id="scene-text">Loading...</p>
+            <div class="choices-container" id="choices-container"></div>
+        </div>
+
+        <!-- Report Screen -->
+        <div id="report-screen">
+            <div class="report-header">
+                <h1>SDL Assessment Report</h1>
+                <div class="meta">
+                    <p id="report-player-name">Player Name</p>
+                    <p id="report-date">Date</p>
+                </div>
+            </div>
+
+            <div class="report-section overall-profile">
+                <h2>Your SDL Profile</h2>
+                <canvas id="overall-chart"></canvas>
+                <div class="overall-level" id="overall-level">Advanced</div>
+            </div>
+
+            <div class="report-section">
+                <h2>Dimension Breakdown</h2>
+                <table class="dimension-table" id="dimension-table">
+                    <thead>
+                        <tr>
+                            <th>Dimension</th>
+                            <th>Level</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dimension-tbody">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="report-section">
+                <h2>Your Learning Profile</h2>
+                <div class="narrative-summary" id="narrative-summary">
+                    Summary loading...
+                </div>
+            </div>
+
+            <div class="report-section">
+                <h2>Growth Opportunities</h2>
+                <div class="recommendations" id="recommendations">
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="primary" onclick="window.print()">Print Report</button>
+                <button class="secondary" onclick="gameEngine.restart()">Play Again</button>
+            </div>
+        </div>
     </div>
 
-    <!-- 3. Dimension Breakdown -->
-    <div style="margin-top:28px;">
-      <div class="report-section-title">Dimension Breakdown</div>
-      <div class="dimension-cards" id="dimension-cards"></div>
-    </div>
+    <script>
+        /* ═══════════════════════════════════════════════════════════════
+           PART 1: CONFIG SECTION — SDL Criteria & Scoring
+           ✏️ EDIT THIS SECTION TO CUSTOMIZE SDL DIMENSIONS
+           ═══════════════════════════════════════════════════════════════ */
 
-    <!-- 4. Narrative Summary -->
-    <div style="margin-top:28px;">
-      <div class="report-section-title">Your Learning Profile</div>
-      <div class="narrative-summary" id="narrative-summary"></div>
-    </div>
+        const SDL_CRITERIA = [
+            {
+                id: "goal_setting",
+                label: "Goal Setting & Planning",
+                description: "Ability to establish clear learning objectives and create actionable plans to achieve them.",
+                weight: 3,
+                levels: {
+                    beginning: {
+                        label: "Beginning",
+                        descriptor: "Learning goals are vague or reactive; planning is minimal or non-existent."
+                    },
+                    developing: {
+                        label: "Developing",
+                        descriptor: "Learning goals are occasionally set, but planning is inconsistent or incomplete."
+                    },
+                    established: {
+                        label: "Established",
+                        descriptor: "Learning goals are clear and plans are created; periodic adjustments are made."
+                    },
+                    advanced: {
+                        label: "Advanced",
+                        descriptor: "Learning goals are specific, time-bound, and regularly reviewed with adaptive planning strategies."
+                    }
+                }
+            },
+            {
+                id: "self_monitoring",
+                label: "Self-Monitoring & Reflection",
+                description: "Capacity to track progress, reflect on learning experiences, and adjust approaches based on feedback.",
+                weight: 3,
+                levels: {
+                    beginning: {
+                        label: "Beginning",
+                        descriptor: "Minimal reflection on learning progress; limited awareness of strengths and gaps."
+                    },
+                    developing: {
+                        label: "Developing",
+                        descriptor: "Occasional reflection occurs; some awareness of progress but inconsistent application of insights."
+                    },
+                    established: {
+                        label: "Established",
+                        descriptor: "Regular reflection practices; identifies areas of strength and development with intent to improve."
+                    },
+                    advanced: {
+                        label: "Advanced",
+                        descriptor: "Continuous reflection with metacognitive awareness; actively seeks and integrates feedback into learning strategies."
+                    }
+                }
+            },
+            {
+                id: "resource_management",
+                label: "Resource Management & Initiative",
+                description: "Skill in identifying, locating, and utilizing learning resources independently and proactively.",
+                weight: 2,
+                levels: {
+                    beginning: {
+                        label: "Beginning",
+                        descriptor: "Relies heavily on others to provide resources; limited exploration or initiative."
+                    },
+                    developing: {
+                        label: "Developing",
+                        descriptor: "Occasionally seeks resources independently; some initiative shown but efforts are sporadic."
+                    },
+                    established: {
+                        label: "Established",
+                        descriptor: "Actively identifies and evaluates various resources; proactive in pursuing learning opportunities."
+                    },
+                    advanced: {
+                        label: "Advanced",
+                        descriptor: "Expertly curates diverse resources and networks; takes strategic initiative to maximize learning impact."
+                    }
+                }
+            },
+            {
+                id: "motivation_persistence",
+                label: "Motivation & Persistence",
+                description: "Drive to continue learning despite obstacles and ability to maintain focus on long-term learning goals.",
+                weight: 2,
+                levels: {
+                    beginning: {
+                        label: "Beginning",
+                        descriptor: "Easily discouraged; learning stops when challenges arise."
+                    },
+                    developing: {
+                        label: "Developing",
+                        descriptor: "Shows some persistence; motivated in familiar contexts but struggles with novel challenges."
+                    },
+                    established: {
+                        label: "Established",
+                        descriptor: "Maintains motivation through most challenges; seeks support when needed and adapts approaches."
+                    },
+                    advanced: {
+                        label: "Advanced",
+                        descriptor: "Demonstrates resilience and intrinsic motivation; views challenges as learning opportunities and perseveres strategically."
+                    }
+                }
+            }
+        ];
 
-    <!-- 5. Recommendations -->
-    <div style="margin-top:28px;" id="recommendations-section">
-      <div class="report-section-title">Growth Opportunities</div>
-      <div class="rec-list" id="rec-list"></div>
-    </div>
+        // ✏️ EDIT: Update this with your assessment title
+        const ASSESSMENT_TITLE = "Learning Journey: Self-Directed Learning Assessment";
+        const ASSESSMENT_DESCRIPTION = "An interactive narrative-based assessment of your self-directed learning competencies.";
 
-    <!-- 6. Actions -->
-    <div class="report-actions" style="margin-top:28px;">
-      <button class="btn-primary" onclick="window.print()">🖨 Print Report</button>
-      <button class="btn-primary" style="background:var(--success);" onclick="confirmRestart()">↩ Play Again</button>
-    </div>
+        /* ═══════════════════════════════════════════════════════════════
+           PART 2: STORY SECTION — Narrative Nodes & Branches
+           ✏️ EDIT THIS SECTION TO CUSTOMIZE YOUR STORY
+           ═══════════════════════════════════════════════════════════════ */
 
-  </div>
-</div>
+        const STORY_NODES = [
+            {
+                id: "start",
+                title: "The Crossroads",
+                text: `You stand at a crossroads in your learning journey. The path ahead is uncertain, but you feel 
+                       a pull toward growth. A wise mentor approaches you and asks, "What brings you here today?"`,
+                image: "scene_crossroads.jpg",
+                choices: [
+                    {
+                        label: "I want to develop a clear plan for my learning goals.",
+                        next: "path_planning",
+                        scores: { goal_setting: 3, self_monitoring: 2 }
+                    },
+                    {
+                        label: "I'm not sure yet—let me explore and see what emerges.",
+                        next: "path_exploration",
+                        scores: { motivation_persistence: 1, resource_management: 2 }
+                    }
+                ]
+            },
+            {
+                id: "path_planning",
+                title: "The Planning Room",
+                text: `You enter a quiet room filled with journals, maps, and planning tools. The mentor invites you 
+                       to map out your learning objectives. "The clearest path," the mentor says, "comes from knowing 
+                       where you want to go." You settle in to work on your plan. But then you notice a stack of 
+                       interesting books on a nearby shelf...`,
+                image: "scene_library.jpg",
+                choices: [
+                    {
+                        label: "Focus entirely on my plan—structure first, exploration later.",
+                        next: "ending_structured",
+                        scores: { goal_setting: 4, self_monitoring: 3, motivation_persistence: 2 }
+                    },
+                    {
+                        label: "Integrate the books into my planning—let curiosity guide my goals.",
+                        next: "ending_adaptive",
+                        scores: { goal_setting: 3, resource_management: 3, motivation_persistence: 3 }
+                    }
+                ]
+            },
+            {
+                id: "path_exploration",
+                title: "The Marketplace of Ideas",
+                text: `You wander into a vibrant marketplace where knowledge is shared in a thousand forms—workshops, 
+                       books, online forums, mentors, and peer discussions. It's overwhelming but exhilarating. Someone 
+                       hands you a map to help you navigate. Do you use it, or do you trust your instincts and wander freely?`,
+                image: "scene_marketplace.jpg",
+                choices: [
+                    {
+                        label: "Ask the mentors here to help me navigate systematically.",
+                        next: "ending_supported",
+                        scores: { goal_setting: 2, resource_management: 2, self_monitoring: 2 }
+                    },
+                    {
+                        label: "Follow my curiosity—engage with what calls to me and reflect afterward.",
+                        next: "ending_reflective",
+                        scores: { motivation_persistence: 4, self_monitoring: 3, resource_management: 2 }
+                    }
+                ]
+            },
+            {
+                id: "ending_structured",
+                title: "The Path of Intention",
+                text: `You emerge from your planning session with a detailed roadmap. Your goals are clear, your milestones 
+                       marked. As you step forward, you notice your path is steady and well-lit—you move with purpose and 
+                       confidence. You have chosen the path of intentional, structured learning.`,
+                image: "scene_path.jpg",
+                choices: []
+            },
+            {
+                id: "ending_adaptive",
+                title: "The Path of Balance",
+                text: `Your plan now weaves together structure and curiosity. You've learned that goals can be both flexible 
+                       and purposeful. As you begin your journey, you feel energized—you have direction, yet room to explore. 
+                       This is the path of adaptive, integrated learning.`,
+                image: "scene_balance.jpg",
+                choices: []
+            },
+            {
+                id: "ending_supported",
+                title: "The Path of Partnership",
+                text: `You've chosen to learn within a community. Your mentors help you navigate the overwhelming abundance 
+                       of resources. With support and guidance, you feel less alone and more capable. This is the path of 
+                       collaborative, supported learning.`,
+                image: "scene_community.jpg",
+                choices: []
+            },
+            {
+                id: "ending_reflective",
+                title: "The Path of Discovery",
+                text: `You dive into the marketplace with open eyes and a reflective mind. Each experience becomes a lesson; 
+                       each choice an opportunity to learn about yourself. Your path is winding, but rich with discovery. 
+                       This is the path of reflective, exploratory learning.`,
+                image: "scene_discovery.jpg",
+                choices: []
+            }
+        ];
 
+        // ✏️ EDIT: Update this constant if you add or remove story nodes
+        const TOTAL_NODES = STORY_NODES.length;
 
-<script>
-/* ================================================================
-   ████████████████████████████████████████████████████████████████
-   SECTION 1: CONFIG — SDL Criteria & Game Settings
-   ████████████████████████████████████████████████████████████████
+        /* ═══════════════════════════════════════════════════════════════
+           PART 3: ENGINE SECTION — Game Logic
+           (Do not edit this section unless you know what you're doing)
+           ═══════════════════════════════════════════════════════════════ */
 
-   HOW TO EDIT THIS SECTION:
-   • Change GAME_CONFIG.title and .subtitle to match your assessment.
-   • In SDL_CRITERIA, each key is a dimension ID (used in STORY_NODES).
-   • Add, remove, or rename dimensions as needed.
-   • Weights: 1 = minor, 2 = moderate, 3 = most important.
-   • Each level has a `label` (short name) and `descriptor` (shown in report).
-   ================================================================ */
+        const gameEngine = {
+            // State
+            playerName: "",
+            currentNodeId: "start",
+            scores: {},
+            visitedNodes: [],
 
-const GAME_CONFIG = {
-  // ✏️ EDIT: Change the title and subtitle of your assessment
-  title:    "The Learning Expedition",
-  subtitle: "An interactive adventure that reveals how you approach self-directed learning. Your choices shape the story — and your profile.",
-};
+            // Initialize scores to zero
+            initializeScores: function() {
+                this.scores = {};
+                SDL_CRITERIA.forEach(criterion => {
+                    this.scores[criterion.id] = 0;
+                });
+            },
 
-const SDL_CRITERIA = {
+            // Start the game
+            startGame: function() {
+                const nameInput = document.getElementById("player-name").value.trim();
+                if (!nameInput) {
+                    alert("Please enter your name to begin.");
+                    return;
+                }
+                this.playerName = nameInput;
+                this.initializeScores();
+                this.visitedNodes = [];
+                this.currentNodeId = "start";
+                this.showGameScreen();
+                this.renderScene();
+            },
 
-  // ──────────────────────────────────────────────────────────────
-  // ✏️ EDIT: Replace this with your own SDL dimension
-  // Dimension 1: Goal Setting & Planning
-  // ──────────────────────────────────────────────────────────────
-  goal_setting: {
-    label:       "Goal Setting & Planning",
-    description: "The ability to identify learning goals, break them into actionable steps, and plan effectively for achieving them.",
-    // ✏️ EDIT: Adjust weight (1 = low, 2 = medium, 3 = high importance)
-    weight: 3,
-    levels: {
-      beginning: {
-        label:      "Beginning",
-        descriptor: "Sets vague or no goals; relies on others to define direction and next steps."
-      },
-      developing: {
-        label:      "Developing",
-        descriptor: "Sets broad goals but struggles to break them into concrete, actionable plans."
-      },
-      established: {
-        label:      "Established",
-        descriptor: "Sets clear, specific goals and creates structured plans with milestones."
-      },
-      advanced: {
-        label:      "Advanced",
-        descriptor: "Proactively sets ambitious, well-defined goals; anticipates obstacles and builds adaptive plans."
-      }
-    }
-  },
+            // Show/hide screens
+            showGameScreen: function() {
+                document.getElementById("welcome-screen").style.display = "none";
+                document.getElementById("game-screen").style.display = "block";
+                document.getElementById("report-screen").style.display = "none";
+            },
 
-  // ──────────────────────────────────────────────────────────────
-  // ✏️ EDIT: Replace this with your own SDL dimension
-  // Dimension 2: Self-Monitoring & Reflection
-  // ──────────────────────────────────────────────────────────────
-  self_monitoring: {
-    label:       "Self-Monitoring & Reflection",
-    description: "The capacity to track one's own progress, notice gaps in understanding, and reflect critically on learning experiences.",
-    // ✏️ EDIT: Adjust weight
-    weight: 2,
-    levels: {
-      beginning: {
-        label:      "Beginning",
-        descriptor: "Rarely checks own progress; moves forward without reflecting on what is or isn't working."
-      },
-      developing: {
-        label:      "Developing",
-        descriptor: "Occasionally reflects on progress but does not consistently use insights to adjust approach."
-      },
-      established: {
-        label:      "Established",
-        descriptor: "Regularly monitors progress and uses reflection to refine strategies and address gaps."
-      },
-      advanced: {
-        label:      "Advanced",
-        descriptor: "Deeply reflective; systematically evaluates learning processes and applies insights to future challenges."
-      }
-    }
-  },
+            showReportScreen: function() {
+                document.getElementById("welcome-screen").style.display = "none";
+                document.getElementById("game-screen").style.display = "none";
+                document.getElementById("report-screen").style.display = "block";
+                this.generateReport();
+            },
 
-  // ──────────────────────────────────────────────────────────────
-  // ✏️ EDIT: Replace this with your own SDL dimension
-  // Dimension 3: Resource Seeking & Initiative
-  // ──────────────────────────────────────────────────────────────
-  resource_seeking: {
-    label:       "Resource Seeking & Initiative",
-    description: "The drive to proactively identify, evaluate, and use diverse resources and opportunities to support learning.",
-    // ✏️ EDIT: Adjust weight
-    weight: 2,
-    levels: {
-      beginning: {
-        label:      "Beginning",
-        descriptor: "Waits to be given resources; does not independently seek out information or support."
-      },
-      developing: {
-        label:      "Developing",
-        descriptor: "Uses provided resources but rarely seeks additional materials or perspectives independently."
-      },
-      established: {
-        label:      "Established",
-        descriptor: "Actively seeks out relevant resources and opportunities beyond what is provided."
-      },
-      advanced: {
-        label:      "Advanced",
-        descriptor: "Curates a rich, diverse set of resources; critically evaluates sources and synthesises multiple perspectives."
-      }
-    }
-  },
+            // Get current node
+            getCurrentNode: function() {
+                return STORY_NODES.find(node => node.id === this.currentNodeId) || STORY_NODES[0];
+            },
 
-  // ──────────────────────────────────────────────────────────────
-  // ✏️ EDIT: Replace this with your own SDL dimension
-  // Dimension 4: Persistence & Adaptability
-  // ──────────────────────────────────────────────────────────────
-  persistence: {
-    label:       "Persistence & Adaptability",
-    description: "The ability to maintain effort in the face of difficulty, adapt strategies when progress stalls, and recover from setbacks.",
-    // ✏️ EDIT: Adjust weight
-    weight: 2,
-    levels: {
-      beginning: {
-        label:      "Beginning",
-        descriptor: "Gives up quickly when facing obstacles; struggles to adapt when initial approaches fail."
-      },
-      developing: {
-        label:      "Developing",
-        descriptor: "Persists with some effort but tends to repeat the same approach even when it isn't working."
-      },
-      established: {
-        label:      "Established",
-        descriptor: "Maintains effort through challenges and adjusts strategies when needed."
-      },
-      advanced: {
-        label:      "Advanced",
-        descriptor: "Demonstrates strong resilience; treats setbacks as learning opportunities and pivots strategies fluidly."
-      }
-    }
-  }
+            // Render scene
+            renderScene: function() {
+                const node = this.getCurrentNode();
+                this.visitedNodes.push(node.id);
 
-  // ──────────────────────────────────────────────────────────────
-  // ✏️ EDIT: Add more dimensions here following the same pattern.
-  // Remember to add a comma after the closing } of the dimension above.
-  // Example:
-  //
-  // ,
-  // my_new_dimension: {
-  //   label: "My New Dimension",
-  //   description: "What this dimension measures.",
-  //   weight: 2,
-  //   levels: {
-  //     beginning:   { label: "Beginning",   descriptor: "..." },
-  //     developing:  { label: "Developing",  descriptor: "..." },
-  //     established: { label: "Established", descriptor: "..." },
-  //     advanced:    { label: "Advanced",    descriptor: "..." }
-  //   }
-  // }
-  // ──────────────────────────────────────────────────────────────
+                // Update progress
+                const sceneNumber = this.visitedNodes.length;
+                document.getElementById("progress-text").textContent = `Scene ${sceneNumber}`;
 
-};
+                // Update title and text
+                document.getElementById("scene-title").textContent = node.title;
+                document.getElementById("scene-text").textContent = node.text;
 
+                // Handle image
+                const imageDiv = document.getElementById("scene-image");
+                if (node.image) {
+                    imageDiv.textContent = `📷 ${node.image}`;
+                } else {
+                    imageDiv.textContent = "No image available";
+                }
 
-/* ================================================================
-   ████████████████████████████████████████████████████████████████
-   SECTION 2: STORY — Narrative Nodes & Branches
-   ████████████████████████████████████████████████████████████████
+                // Render choices
+                this.renderChoices(node);
+            },
 
-   HOW TO EDIT THIS SECTION:
-   • Each entry in STORY_NODES is one scene.
-   • The key (e.g. "scene_start") is the node's ID — used in `next` fields.
-   • `choices` is an array; each choice has a `label`, a `next` node ID,
-     and a `scores` object mapping dimension IDs to a score of 1–4.
-   • A node with NO `choices` (or an empty array) ends the game and
-     triggers the report.
-   • The game always starts at the node with id "scene_start".
-   ================================================================ */
+            // Render choice buttons
+            renderChoices: function(node) {
+                const container = document.getElementById("choices-container");
+                container.innerHTML = "";
 
-const STORY_NODES = {
+                if (node.choices.length === 0) {
+                    // This is an ending node
+                    setTimeout(() => this.showReportScreen(), 500);
+                    return;
+                }
 
-  // ════════════════════════════════════════════════════════════════
-  // SCENE 1 — The Starting Point
-  // ════════════════════════════════════════════════════════════════
-  scene_start: {
-    id:    "scene_start",
-    // ✏️ EDIT: Replace with your scene's title
-    title: "The Crossroads of Learning",
-    // ✏️ EDIT: Replace with your scene's narrative text
-    text:  `You stand at the edge of a vast, uncharted forest — the Forest of Knowledge. 
-Your mentor hands you a worn leather satchel and says: "Everything you need to 
-master the path ahead is out there. But the path itself? That's yours to find."
+                node.choices.forEach(choice => {
+                    const button = document.createElement("button");
+                    button.className = "choice-button";
+                    button.textContent = choice.label;
+                    button.onclick = () => this.makeChoice(choice);
+                    container.appendChild(button);
+                });
+            },
 
-You glance at the two trails ahead. One is well-worn and clearly marked. 
-The other disappears into the undergrowth, unmarked but intriguing.
+            // Handle choice selection
+            makeChoice: function(choice) {
+                // Add scores
+                if (choice.scores) {
+                    for (const dimensionId in choice.scores) {
+                        this.scores[dimensionId] += choice.scores[dimensionId];
+                    }
+                }
 
-How do you begin?`,
-    // ✏️ EDIT: Optional — set to a filename like "scene1.jpg" if you have images,
-    //          or leave as empty string "" to show no image.
-    image: "",
-    choices: [
-      {
-        // ✏️ EDIT: Replace with your choice's button text
-        label: "Pull out a blank map and sketch a rough plan before taking a step.",
-        // ✏️ EDIT: Replace with the ID of the next scene this choice leads to
-        next:  "scene_2a",
-        // ✏️ EDIT: Map this choice to SDL dimensions and score levels (1–4).
-        //          Only include dimensions this choice is relevant to.
-        scores: {
-          goal_setting
+                // Navigate to next node
+                this.currentNodeId = choice.next;
+                
+                // Fade and render
+                const gameScreen = document.getElementById("game-screen");
+                gameScreen.style.opacity = "0";
+                setTimeout(() => {
+                    gameScreen.style.opacity = "1";
+                    this.renderScene();
+                }, 300);
+            },
+
+            // Restart game
+            restart: function() {
+                document.getElementById("welcome-screen").style.display = "block";
+                document.getElementById("game-screen").style.display = "none";
+                document.getElementById("report-screen").style.display = "none";
+                document.getElementById("player-name").value = "";
+            },
+
+            /* ═══════════════════════════════════════════════════════════════
+               PART 4: REPORT SECTION — Output & Visualization
+               (Do not edit this section)
+               ═══════════════════════════════════════════════════════════════ */
+
+            generateReport: function() {
+                // Set player name and date
+                document.getElementById("report-player-name").textContent = `Player: ${this.playerName}`;
+                document.getElementById("report-date").textContent = `Date: ${new Date().toLocaleDateString()}`;
+
+                // Generate dimension breakdown table
+                this.generateDimensionTable();
+
+                // Draw overall profile chart
+                this.drawOverallChart();
+
+                // Generate narrative summary
+                this.generateNarrativeSummary();
+
+                // Generate recommendations
+                this.generateRecommendations();
+            },
+
+            // Calculate weighted scores
+            calculateWeightedScores: function() {
+                const weighted = {};
+                let totalWeight = 0;
+                let weightedSum = 0;
+
+                SDL_CRITERIA.forEach(criterion => {
+                    const score = this.scores[criterion.id] || 0;
+                    const normalizedScore = score / 4; // Normalize to 0-1
+                    weighted[criterion.id] = normalizedScore;
+                    totalWeight += criterion.weight;
+                    weightedSum += normalizedScore * criterion.weight;
+                });
+
+                const overallWeightedScore = totalWeight > 0 ? weightedSum / totalWeight : 0;
+                return { weighted, overall: overallWeightedScore };
+            },
+
+            // Get proficiency level label
+            getLevelLabel: function(normalizedScore) {
+                if (normalizedScore >= 0.875) return "Advanced";
+                if (normalizedScore >= 0.625) return "Established";
+                if (normalizedScore >= 0.375) return "Developing";
+                return "Beginning";
+            },
+
+            // Generate dimension table
+            generateDimensionTable: function() {
+                const tbody = document.getElementById("dimension-tbody");
+                tbody.innerHTML = "";
+
+                SDL_CRITERIA.forEach(criterion => {
+                    const score = this.scores[criterion.id] || 0;
+                    const normalizedScore = score / 4;
+                    const levelLabel = this.getLevelLabel(normalizedScore);
+                    const levelData = criterion.levels[levelLabel.toLowerCase().replace(" ", "_")];
+
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>
+                            <strong>${criterion.label}</strong><br>
+                            <small style="color: var(--text-muted);">${criterion.description}</small>
+                        </td>
+                        <td>
+                            <strong>${levelLabel}</strong><br>
+                            <small>${levelData.descriptor}</small>
+                        </td>
+                        <td>
+                            <div class="score-bar">
+                                <div class="score-bar-fill" style="width: ${normalizedScore * 100}%"></div>
+                            </div>
+                            <small>${score}/4</small>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            },
+
+            // Draw overall profile chart (canvas-based)
+            drawOverallChart: function() {
+                const canvas = document.getElementById("overall-chart");
+                const ctx = canvas.getContext("2d");
+
+                // Set canvas size
+                canvas.width = 400;
+                canvas.height = 250;
+
+                const { weighted, overall } = this.calculateWeightedScores();
+                const dimensions = SDL_CRITERIA.map(c => c.label);
+                const values = SDL_CRITERIA.map(c => weighted[c.id]);
+
+                // Chart settings
+                const padding = 50;
+                const chartWidth = canvas.width - 2 * padding;
+                const chartHeight = canvas.height - 2 * padding;
+                const barWidth = chartWidth / dimensions.length * 0.7;
+                const spacing = chartWidth / dimensions.length;
+
+                // Clear canvas
+                ctx.fillStyle = "#f5f1e8";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Draw axes
+                ctx.strokeStyle = "#ccc";
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(padding, padding);
+                ctx.lineTo(padding, canvas.height - padding);
+                ctx.lineTo(canvas.width - padding, canvas.height - padding);
+                ctx.stroke();
+
+                // Draw axis labels
+                ctx.fillStyle = "#666";
+                ctx.font = "12px Arial";
+                ctx.textAlign = "center";
+                for (let i = 0; i <= 4; i++) {
+                    const y = canvas.height - padding - (i / 4) * chartHeight;
+                    ctx.fillText(i.toFixed(1), padding - 20, y + 4);
+                    ctx.strokeStyle = "#eee";
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(padding, y);
+                    ctx.lineTo(canvas.width - padding, y);
+                    ctx.stroke();
+                }
+
+                // Draw bars
+                dimensions.forEach((dim, i) => {
+                    const x = padding + i * spacing + spacing / 2 - barWidth / 2;
+                    const value = values[i];
+                    const barHeight = value * chartHeight;
+                    const y = canvas.height - padding - barHeight;
+
+                    // Bar gradient
+                    const gradient = ctx.createLinearGradient(x, y, x, canvas.height - padding);
+                    gradient.addColorStop(0, "#d4a574");
+                    gradient.addColorStop(1, "#a67c52");
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(x, y, barWidth, barHeight);
+
+                    // Label
+                    ctx.fillStyle = "#2c3e50";
+                    ctx.font = "11px Arial";
+                    ctx.save();
+                    ctx.translate(x + barWidth / 2, canvas.height - padding + 5);
+                    ctx.rotate(Math.PI / 6);
+                    ctx.textAlign = "left";
+                    ctx.fillText(dim.substring(0, 12), 0, 0);
+                    ctx.restore();
+                });
+
+                // Overall level
+                const overallLevel = this.getLevelLabel(overall);
+                document.getElementById("overall-level").textContent = overallLevel;
+            },
+
+            // Generate narrative summary
+            generateNarrativeSummary: function() {
+                const { weighted } = this.calculateWeightedScores();
+                const summaries = [];
+
+                SDL_CRITERIA.forEach(criterion => {
+                    const normalizedScore = weighted[criterion.id];
+                    const levelKey = this.getLevelLabel(normalizedScore).toLowerCase().replace(" ", "_");
+                    const levelData = criterion.levels[levelKey];
+                    
+                    const sentence = `In ${criterion.label}, you demonstrated ${levelData.label} proficiency: ${levelData.descriptor}`;
+                    summaries.push(sentence);
+                });
+
+                const summary = summaries.join(" ") + ` Overall, your self-directed learning profile shows a ${this.getLevelLabel(this.calculateWeightedScores().overall)} 
+                level of engagement with SDL principles.`;
+
+                document.getElementById("narrative-summary").textContent = summary;
+            },
+
+            // Generate recommendations
+            generateRecommendations: function() {
+                const { weighted } = this.calculateWeightedScores();
+                const recommendationsDiv = document.getElementById("recommendations");
+                recommendationsDiv.innerHTML = "";
+
+                let hasRecommendations = false;
+
+                SDL_CRITERIA.forEach(criterion => {
+                    const normalizedScore = weighted[criterion.id];
+                    const levelLabel = this.getLevelLabel(normalizedScore);
+
+                    // Only show recommendations for developing or beginning levels
+                    if (normalizedScore < 0.625) {
+                        hasRecommendations = true;
+                        const nextLevelKey = normalizedScore < 0.375 ? "developing" : "established";
+                        const nextLevel = criterion.levels[nextLevelKey];
+
+                        const item = document.createElement("div");
+                        item.className = "recommendation-item";
+                        item.innerHTML = `<strong>${criterion.label}:</strong> Aim to reach ${nextLevel.label} by focusing on: "${nextLevel.descriptor}"`;
+                        recommendationsDiv.appendChild(item);
+                    }
+                });
+
+                if (!hasRecommendations) {
+                    recommendationsDiv.innerHTML = `<p><strong>Congratulations!</strong> You've demonstrated strong proficiency across all SDL dimensions. 
+                    Consider taking on increasingly complex learning challenges to deepen your mastery.</p>`;
+                }
+            }
+        };
+
+        // Add smooth fade transition
+        const gameScreen = document.getElementById("game-screen");
+        gameScreen.style.transition = "opacity 0.3s ease";
+        gameScreen.style.opacity = "1";
+    </script>
+</body>
+</html>
