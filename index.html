@@ -339,7 +339,9 @@
                 title: "Your Learning Journey",
                 subtitle: "A Story of Gabriel — and You",
                 howToPlay: [
-                    "You are Gabriel. As you move through school, you will face moments where you need to make choices — about how to learn, who to work with, and what matters to you. There are no wrong answers. Some paths will be harder, some more rewarding. Pay attention to why you make each choice. That's where the real learning happens."
+                    "You are Gabriel. As you move through school, you will face moments where you need to make choices — about how to learn, who to work with, and what matters to you. There are no wrong answers. What matters is that you make choices consciously, and notice why you made them.",
+                    "As you play, your choices will be tracked in the sidebar. At the end of your journey, you'll see all the choices you made and be invited to reflect on what they say about you as a learner.",
+                    "This is not a test. It's an invitation to think about how you learn, and who you want to become."
                 ],
                 buttonText: "Begin Your Journey"
             },
@@ -348,7 +350,7 @@
                 {
                     id: 1,
                     title: "Primary 5 — The Reading Corner Problem",
-                    setting: "It's a Tuesday morning in Mrs. Raj's Mathematics class. She has just explained something that's been bothering you ever since she drew two shapes on the board — a long, thin rectangle and a squarish one. Both have the same perimeter. But their areas are completely different.\n\nHow can that be? You stare at your notebook. The numbers are right there, but they don't feel real yet.\n\nThen Mrs. Raj announces a class project: your class will redesign the reading corner. She wants your group to come up with the best possible layout — one that gives students the most space and feels welcoming.\n\nYou look over at the reading corner. It's a bit cramped. You've always wanted it to be better.",
+                    setting: "It's a Tuesday morning in Mrs. Raj's Mathematics class. She has just explained something that's been bothering you ever since she drew two shapes on the board — a long, narrow rectangle and a square. \"They have the same perimeter,\" she said, \"but different areas.\" Your task this week is real: your class is redesigning the reading corner. Mrs. Raj has asked you and your group to create a layout that fits the existing space and makes it inviting.",
                     choices: [
                         {
                             id: 1,
@@ -357,15 +359,15 @@
                             options: [
                                 {
                                     label: "A: Jump straight in — start measuring the reading corner right away so you have real numbers to work with.",
-                                    outcome: "You grab the measuring tape and get to work. The numbers ground you — you now know exactly how much space you have. But when your group starts arguing about which layout is best, you realise you don't yet have a way to compare them fairly. You'll need to think about what \"best\" actually means."
+                                    outcome: "You grab the measuring tape and get to work. The numbers ground you — you now know exactly how much space you have. But when your group starts arguing about whether a long, narrow layout or a square one is better, you realise the measurements alone don't tell you everything. They tell you what fits. They don't tell you what feels right."
                                 },
                                 {
                                     label: "B: Sketch a few layout ideas first, so your group has something to discuss before measuring.",
-                                    outcome: "Your sketches spark a lively discussion. But when someone asks, \"Will this layout actually fit?\", you realise you need measurements to check. The ideas are exciting — now you need the numbers to back them up."
+                                    outcome: "Your sketches spark a lively discussion. But when someone asks, \"Will this layout actually fit?\", you realise you need measurements to check. The ideas and the numbers have to work together. You're learning something that isn't in the textbook: the order of thinking matters."
                                 },
                                 {
                                     label: "C: Ask Mrs. Raj what she thinks the most important thing to figure out is before you start.",
-                                    outcome: "Mrs. Raj smiles and says, \"Good question. What do *you* think matters most — the space, the comfort, or the look?\" You hadn't thought about all three at once. It makes the problem feel bigger, but also more interesting."
+                                    outcome: "Mrs. Raj smiles and says, \"Good question. What do *you* think matters most — the space, the comfort, or the look?\" You hadn't thought about all three. By asking for help to frame the problem, you've actually made the problem clearer."
                                 }
                             ],
                             reflectivePrompt: "Take a moment — why did you pick that option? What were you hoping it would help you do?"
@@ -374,19 +376,19 @@
                             id: 2,
                             number: 2,
                             question: "The Problem Gets Complicated",
-                            preamble: "Your group has two possible layouts. Layout A is long and narrow. Layout B is more square-shaped. Both fit within the same perimeter — the same total length of wall space. But when you calculate the areas, Layout B gives noticeably more floor space.\n\nYour groupmate Priya says, \"Let's just go with B, it's obviously bigger.\"\n\nBut you remember something from Science — the reading corner is near the window. A long, narrow layout might actually get more natural light across the whole space.",
+                            preamble: "Your group has two possible layouts. Layout A is long and narrow. Layout B is more square-shaped. Both fit within the same perimeter — the same total length of the walls. But Layout A has a smaller area, and Layout B has a larger area. Your friend Priya says the bigger area is obviously better. But you're not so sure.",
                             options: [
                                 {
                                     label: "A: Agree with Priya. The bigger area is more important — students need room to move.",
-                                    outcome: "Your group moves quickly and confidently. The design comes together fast. But during the presentation, Mrs. Raj asks, \"Did you think about how the light falls?\" You pause. You had thought about it — but let it go. You make a note to yourself: *speed isn't always the same as thoroughness.*"
+                                    outcome: "Your group moves quickly and confidently. The design comes together fast. But during the presentation, Mrs. Raj asks, \"Did you think about how the light falls? Or how it feels to sit in a long narrow space?\" You realise that area isn't the only thing that matters."
                                 },
                                 {
                                     label: "B: Push back gently. Suggest that light and comfort matter too, not just floor space.",
-                                    outcome: "Priya looks a little annoyed at first, but listens. The conversation slows down — but gets richer. Your group starts thinking about what \"best\" really means for the people who'll use the space."
+                                    outcome: "Priya looks a little annoyed at first, but listens. The conversation slows down — but gets richer. Your group starts thinking about what \"best\" really means. You're learning that good thinking sometimes means slowing down."
                                 },
                                 {
                                     label: "C: Propose testing both layouts by sketching how light would fall across each one, before deciding.",
-                                    outcome: "It takes more time, but your group ends up with a much more considered design. You feel the difference between a quick answer and a well-reasoned one."
+                                    outcome: "It takes more time, but your group ends up with a much more considered design. You feel the difference between a quick answer and a well-reasoned one. This is what thinking feels like when you actually care about getting it right."
                                 }
                             ],
                             reflectivePrompt: "Why did you choose that? What were you weighing up?"
@@ -395,31 +397,31 @@
                             id: 3,
                             number: 3,
                             question: "Reflection Time",
-                            preamble: "At the end of the week, Mrs. Raj asks everyone to write a short reflection in their learning journal. She asks: *What did you learn — not just about Math, but about how you learn?*\n\nYou think about the week. The confusion at the start. The measuring. The arguments in your group. The moment the area-perimeter idea finally clicked.",
+                            preamble: "At the end of the week, Mrs. Raj asks everyone to write a short reflection in their learning journal. She asks: *What did you learn — not just about Math, but about yourself as a thinker?*",
                             options: [
                                 {
                                     label: "A: Write about the Math — how you now understand that same perimeter doesn't mean same area.",
-                                    outcome: "Mrs. Raj affirms your mathematical understanding. She also gently asks, \"How did you figure it out? What helped the idea click?\" You realise the *how* is just as worth remembering as the *what*."
+                                    outcome: "Mrs. Raj affirms your mathematical understanding. She also gently asks, \"How did you figure it out? What helped the idea click?\" You realise the *how* is sometimes as important as the *what*."
                                 },
                                 {
                                     label: "B: Write about working with your group — what was hard, what helped, what you'd do differently.",
-                                    outcome: "Mrs. Raj notes that you're already thinking about collaboration as a skill. She asks, \"What would you do differently next time — and why?\" You find yourself thinking harder than you expected."
+                                    outcome: "Mrs. Raj notes that you're already thinking about collaboration as a skill. She asks, \"What would you do differently next time — and why?\" You find yourself thinking about how you work with others."
                                 },
                                 {
                                     label: "C: Write about how the different subjects connected — how Math, Science and Art each helped you solve a different part of the same problem.",
-                                    outcome: "Mrs. Raj is visibly pleased. \"You've done something important,\" she says. \"You've seen how learning in one subject can help you in another. That's a habit worth keeping.\" You feel something settle — like a piece of a larger puzzle has clicked into place."
+                                    outcome: "Mrs. Raj is visibly pleased. \"You've done something important,\" she says. \"You've seen how learning in one subject can help you in another. That's a habit of mind that will take you far.\""
                                 }
                             ],
                             reflectivePrompt: "What feels most true to what you actually experienced this week?"
                         }
                     ],
-                    endScene: "However you played this scene, you leave Primary 5 with something. Maybe it's a clearer understanding of area and perimeter. Maybe it's a new way of working with others. Maybe it's the beginning of a habit — of asking *why*, of connecting ideas, of noticing when something doesn't quite make sense yet and staying with it until it does.\n\nSecondary school is coming. Things are about to get bigger."
+                    endScene: "However you played this scene, you leave Primary 5 with something. Maybe it's a clearer understanding of area and perimeter. Maybe it's a new way of working with others. Maybe it's a question about what \"good thinking\" really means. All of these matter. You're beginning to see that learning isn't just about answers — it's about how you think, and why."
                 },
 
                 {
                     id: 2,
                     title: "Lower Secondary — The Canteen Project",
-                    setting: "Secondary school is different from what you expected. There are new subjects, new teachers, a CCA you're still finding your footing in — and fewer year-end exams than you thought there'd be. That last part surprises you. It means you have more room to actually think about things, rather than just prepare for tests.\n\nIn Sustainable Living, your class is exploring a question that feels genuinely important: *How can teenagers reduce food waste in Singapore?*\n\nYour teacher, Mr. Lim, doesn't give you a worksheet. He tells you to go and find out for yourselves.\n\nYou start spending time at the school canteen during recess, watching. You notice how much food gets left on plates. You start talking to the stallholders. Uncle Ahmad, who runs the mixed rice stall, tells you he throws away a significant amount of food every single day. He looks tired when he says it.\n\nSomething about that sticks with you.",
+                    setting: "Secondary school is different from what you expected. There are new subjects, new teachers, a CCA you're still finding your footing in — and fewer year-end exams than you thought there would be. Instead, there are projects. Real projects that connect to real problems. Your Integrated Humanities class has been asked to investigate food waste in the school canteen, and to propose a solution. Your mentor is Mr. Lim, a teacher who asks questions instead of giving answers. On Monday morning, he lays out the problem: the canteen throws away a lot of food every day. Uncle Ahmad, who runs the canteen, is frustrated. He wants to reduce waste, but doesn't know how. Your group's job is to figure it out.",
                     choices: [
                         {
                             id: 4,
@@ -429,15 +431,15 @@
                             options: [
                                 {
                                     label: "A: Focus on collecting data — count the plates, weigh the leftovers, build a clear picture of how much is actually being wasted.",
-                                    outcome: "Your data is compelling. Numbers have a way of making a problem feel real and undeniable. But when you present your findings to Uncle Ahmad, he nods slowly and says, \"I know. But what do you want me to do about it?\" You realise data alone doesn't tell you what to change."
+                                    outcome: "Your data is compelling. Numbers have a way of making a problem feel real and undeniable. But when you present your findings to Uncle Ahmad, he nods slowly and says, \"Yes, yes, but why? Why are students throwing this away?\" You realise that data tells you what, but not always why."
                                 },
                                 {
                                     label: "B: Focus on understanding *why* — talk to more students and stallholders to find out what's driving the waste.",
-                                    outcome: "The conversations are rich and sometimes surprising. Students say portions are too large. Uncle Ahmad says he can't easily reduce portions without losing money. You start to see the problem from multiple sides — and that makes the solution harder, but more honest."
+                                    outcome: "The conversations are rich and sometimes surprising. Students say portions are too large. Uncle Ahmad says he can't easily reduce portions without losing money. You're learning that real problems have real people in them, with conflicting needs."
                                 },
                                 {
                                     label: "C: Do both, but accept that you'll have less depth in each area given the time you have.",
-                                    outcome: "You have a bit of everything. It's messier, but it reflects the real complexity of the problem. Mr. Lim tells you, \"Real problems rarely fit neatly into one approach.\""
+                                    outcome: "You have a bit of everything. It's messier, but it reflects the real complexity of the problem. Mr. Lim tells you, \"Real problems rarely fit neatly into a single approach. You've learned something important.\""
                                 }
                             ],
                             reflectivePrompt: "What's guiding your choice here — thoroughness, curiosity, practicality, or something else?"
@@ -446,19 +448,19 @@
                             id: 5,
                             number: 5,
                             question: "Designing a Solution",
-                            preamble: "Your group has landed on an idea: colour-coded plates that guide students to choose portion sizes before they serve themselves. Smaller portions, less waste. You've used ratios from Mathematics to work out the plate sizes, and thought carefully about colour choices from Art.\n\nBut when you bring the idea to Uncle Ahmad, he hesitates. \"More plates to wash. More cost. I'm not sure this helps me.\"\n\nYour group is deflated. You've worked hard on this. But you can see his point.",
+                            preamble: "Your group has landed on an idea: colour-coded plates that guide students to choose portion sizes before they serve themselves. Smaller portions, less waste. You pitch the idea to Uncle Ahmad. He listens politely, then says, \"I appreciate it, but I can't change my whole system for this. It's too complicated.\" Your solution, the one you thought was clever, has just been rejected by the person who actually has to implement it.",
                             options: [
                                 {
                                     label: "A: Go back to the drawing board — the idea clearly doesn't work if the stallholder won't adopt it.",
-                                    outcome: "Starting over is demoralising, but your group comes back with a leaner, more practical idea. You learn something important: a solution that doesn't work for the people it affects isn't really a solution."
+                                    outcome: "Starting over is demoralising, but your group comes back with a leaner, more practical idea. You learn something important: a solution that doesn't work in the real world isn't actually a solution, no matter how clever it is on paper."
                                 },
                                 {
                                     label: "B: Try to persuade Uncle Ahmad by explaining the benefits to students and the school more clearly.",
-                                    outcome: "Uncle Ahmad listens politely but remains unconvinced. You realise that persuasion works better when it starts from the other person's perspective, not your own."
+                                    outcome: "Uncle Ahmad listens politely but remains unconvinced. You realise that persuasion works better when it starts from the other person's perspective, not your own. He's worried about cost and complexity. Your pitch didn't address his worries."
                                 },
                                 {
                                     label: "C: Reframe the conversation — ask Uncle Ahmad what *his* biggest problem is, and see if your solution can be adjusted to address it too.",
-                                    outcome: "This is harder than it sounds — you have to really listen, and then think on your feet. But when you ask Uncle Ahmad what worries him most, he mentions ingredient costs. You find yourself saying, almost without planning to: \"What if this actually helps you save on ingredients?\" His expression shifts. The conversation changes."
+                                    outcome: "This is harder than it sounds — you have to really listen, and then think on your feet. But when you ask Uncle Ahmad what worries him most, he mentions that he's understaffed at lunch. Your colour-coded plates suddenly become a solution that makes his job easier, not harder. He agrees to try it."
                                 }
                             ],
                             reflectivePrompt: "What does your choice say about how you handle a setback?"
@@ -467,49 +469,49 @@
                             id: 6,
                             number: 6,
                             question: "Managing the Final Push",
-                            preamble: "It's the last week before your group's presentation. There's still a lot to finish — your prototype, your portfolio documentation, your reflection. One of your groupmates, Siti, is stressed and wants to redo a section she's unhappy with. Another, Wei Jie, thinks you should just submit what you have.\n\nYou're somewhere in the middle — tired, but still caring about the outcome.",
+                            preamble: "It's the last week before your group's presentation. There's still a lot to finish — your prototype, your portfolio documentation, your reflection. One of your groupmates, Wei Jie, says, \"We've done enough. Let's just submit it.\" Another, Siti, says, \"The documentation section isn't clear enough. We need to redo it.\" You're tired. You want it to be over. But you're also aware that Siti might be right.",
                             options: [
                                 {
                                     label: "A: Side with Wei Jie. You've done enough. Submit what you have and rest.",
-                                    outcome: "You submit on time and feel relieved. But during the presentation, you notice the gap Siti was worried about. You wonder if a little more time would have made a difference. You file that away."
+                                    outcome: "You submit on time and feel relieved. But during the presentation, you notice the gap Siti was worried about. You wonder if a little more time would have made a difference. You've learned that rest is important, but so is finishing well."
                                 },
                                 {
                                     label: "B: Support Siti. If she feels it's not good enough, it's worth the extra effort.",
-                                    outcome: "Siti appreciates it. The section improves. But Wei Jie is frustrated, and the group dynamic feels strained at the end. You learn that supporting one person sometimes means navigating the feelings of others too."
+                                    outcome: "Siti appreciates it. The section improves. But Wei Jie is frustrated, and the group dynamic feels strained at the end. You learn that supporting one person sometimes means disappointing another. There's no perfect answer here."
                                 },
                                 {
                                     label: "C: Call a quick group check-in. List what absolutely needs to be done, what would be nice to improve, and decide together.",
-                                    outcome: "The check-in takes twenty minutes but saves an hour of confusion. You finish what matters, let go of what doesn't, and present with more confidence than you expected. Mr. Lim notes in your portfolio feedback: *\"Good evidence of the group managing themselves under pressure.\"*"
+                                    outcome: "The check-in takes twenty minutes but saves an hour of confusion. You finish what matters, let go of what doesn't, and present with more confidence than if you'd rushed or agonised alone. You've learned that talking about the work is part of the work."
                                 }
                             ],
                             reflectivePrompt: "How do you usually handle pressure near a deadline — and is that working for you?"
                         }
                     ],
-                    endScene: "You've spent a term on something that felt real — a real problem, a real person, a real community. Uncle Ahmad's canteen is a little different now. Maybe the plates are there. Maybe the conversation you had planted a seed. Either way, you've learned something about what it means to make learning matter beyond the classroom.\n\nYou're heading into upper secondary. The choices are about to get more personal."
+                    endScene: "You've spent a term on something that felt real — a real problem, a real person, a real community. Uncle Ahmad's canteen is a little different now. Maybe the plates have changed. Maybe the conversation between Uncle Ahmad and the students has changed. Maybe your understanding of what \"solving a problem\" means has changed. All of that is a win."
                 },
 
                 {
                     id: 3,
                     title: "Upper Secondary — Choosing Your Direction",
-                    setting: "It's near the end of Term 1 in Secondary 3. You and your friend Andy are sitting in the school library. On the table between you is a list of elective modules for next term — subjects you get to choose based on your interests, not just your stream.\n\nAndy is staring at the list with a slightly overwhelmed expression. \"I'm still figuring out what I'm interested in,\" he admits.\n\nYou've been using the reflection tools on SLS to think about your own learning over the past two years. You suggest trying them together.\n\nWhat comes up surprises both of you. Andy's been quietly curious about his family's coffee shop — the business side, the customers, the rhythms of it. You've been drawn, without quite naming it until now, to questions about food systems and sustainability. The thread from the canteen project in Secondary 1 is still there.\n\nYou look at each other. \"We could do our IPW on this,\" Andy says.",
+                    setting: "It's near the end of Term 1 in Secondary 3. You and your friend Andy are sitting in the school library. On the table between you is a list of elective modules for next term. You're also working on an Interdisciplinary Project Work with Andy — a larger, self-directed project that will span the next two years. Suddenly, school is asking you to make real choices about what you study and how you spend your time. It's exhilarating and a little terrifying.",
                     choices: [
                         {
                             id: 7,
                             number: 7,
                             question: "Defining Your Focus",
-                            preamble: "Your Interdisciplinary Project Work needs a clear question. You and Andy have a shared interest in local food businesses and energy use, but you're approaching it from different angles — Andy from the business and customer side, you from the environmental and systems side.",
+                            preamble: "Your Interdisciplinary Project Work needs a clear question. You and Andy have a shared interest in local food businesses and energy use, but you're approaching it from different angles. Andy is thinking about his family's hawker business. You're thinking about sustainability.",
                             options: [
                                 {
                                     label: "A: Let Andy take the lead on framing the question, since it's his family's business context that sparked the idea.",
-                                    outcome: "The project gets off the ground quickly. But halfway through, you realise you're doing a lot of supporting work without feeling fully invested. You bring this up with Andy. It's an uncomfortable conversation — but an important one."
+                                    outcome: "The project gets off the ground quickly. But halfway through, you realise you're doing a lot of supporting work without feeling fully invested. You bring this up hesitantly. Andy listens, and you reframe the question together. You learn that ownership matters."
                                 },
                                 {
                                     label: "B: Frame the question around your sustainability interest, since that gives the project a clearer social purpose.",
-                                    outcome: "The project feels meaningful to you, but Andy starts to seem less engaged. Your mentor, Ms Tan, notices and asks you both: \"Whose project is this?\" It's a question worth sitting with."
+                                    outcome: "The project feels meaningful to you, but Andy starts to seem less engaged. Your mentor, Ms Tan, notices and asks you both: \"Whose project is this?\" It's a question that stops you in your tracks. You realise you've optimised the project for yourself, not for both of you."
                                 },
                                 {
                                     label: "C: Spend time negotiating a question that genuinely holds both your interests — even if it takes longer to agree on.",
-                                    outcome: "It takes three sessions to land on a question you're both genuinely excited about: *How can local hawker businesses reduce energy use and food waste without increasing costs?* It's specific, practical, and it belongs to both of you."
+                                    outcome: "It takes three sessions to land on a question you're both genuinely excited about: *How can local hawker businesses reduce energy use and food waste without compromising the quality or affordability of their food?* It's specific, it's real, and it belongs to both of you."
                                 }
                             ],
                             reflectivePrompt: "What does a good collaboration actually require of you?"
@@ -518,19 +520,19 @@
                             id: 8,
                             number: 8,
                             question: "When the Research Gets Hard",
-                            preamble: "You're three weeks into the project. Andy is applying thermal processes and heat conduction from Physics to study coffee brewing efficiency. You're examining how roasting and food preparation contribute to energy use and waste. The science is harder than you expected.\n\nYou hit a wall. The data you've collected from two nearby hawker stalls doesn't show the pattern you expected. Your hypothesis might be wrong.",
+                            preamble: "You're three weeks into the project. Andy is applying thermal processes and heat conduction from Physics to study coffee brewing efficiency. You're examining how customers at three different hawker stalls choose what to buy. But the patterns you're seeing don't match what you expected. Students are buying the most expensive items, not the cheapest. Energy use at the stall isn't the main driver of cost. Nothing is as straightforward as you thought.",
                             options: [
                                 {
                                     label: "A: Adjust your hypothesis to fit the data you have, and move forward.",
-                                    outcome: "Your revised hypothesis is more modest but more defensible. Ms Tan later tells you: \"Adjusting your thinking based on evidence is exactly what good researchers do.\" You feel the difference between giving up on an idea and genuinely revising it."
+                                    outcome: "Your revised hypothesis is more modest but more defensible. Ms Tan later tells you: \"Adjusting your thinking based on evidence is exactly what good research is. You're learning.\" But you wonder if you've missed something by not digging deeper."
                                 },
                                 {
                                     label: "B: Go back and collect more data from additional stalls before drawing any conclusions.",
-                                    outcome: "The additional data is illuminating — and messy. The picture is more complicated than you thought. You spend more time than planned, but your findings are richer for it."
+                                    outcome: "The additional data is illuminating — and messy. The picture is more complicated than you thought. You spend more time than planned, but your findings are richer and more nuanced. You've learned that patience has its own payoff."
                                 },
                                 {
                                     label: "C: Bring the unexpected findings to Ms Tan and ask for her perspective before deciding what to do.",
-                                    outcome: "Ms Tan doesn't give you the answer. She asks you questions instead. \"What were you assuming when you designed the data collection? Could the stalls themselves be different in ways that matter?\" You leave the conversation with more questions — but better ones."
+                                    outcome: "Ms Tan doesn't give you the answer. She asks you questions instead. \"What were you assuming when you designed the data collection? Could the stalls themselves have shaped what customers bought? What would you need to find out to answer that?\" She's teaching you to think like a researcher."
                                 }
                             ],
                             reflectivePrompt: "How do you usually respond when evidence doesn't support what you believed — and what does that tell you about yourself as a learner?"
@@ -539,19 +541,19 @@
                             id: 9,
                             number: 9,
                             question: "Choosing Your Electives",
-                            preamble: "Alongside the IPW, you need to choose your elective modules for the term. The list includes Consumer Psychology, Music, Advanced Environmental Science, and Business Fundamentals, among others.\n\nAndy is leaning towards Consumer Psychology — it connects to his interest in customer behaviour at his family's coffee shop. He suggests you take it together.\n\nBut you've been quietly curious about Music for a while — specifically, acoustics. You're not sure how it connects to anything yet. It just interests you.",
+                            preamble: "Alongside the IPW, you need to choose your elective modules for the term. The list includes Consumer Psychology, Music, Advanced Environmental Science, and Business Innovation. Consumer Psychology would support the IPW. Music has nothing to do with the project. You don't know what you want yet.",
                             options: [
                                 {
                                     label: "A: Take Consumer Psychology with Andy. It's relevant to the project, and you'll learn together.",
-                                    outcome: "The module is genuinely interesting, and working alongside Andy deepens your collaboration. But you find yourself occasionally wondering about the Music module. You make a note to explore acoustics on your own time."
+                                    outcome: "The module is genuinely interesting, and working alongside Andy deepens your collaboration. But you find yourself occasionally wondering about the Music module — what would you have learned there? You've optimised for the known, and let the unknown go."
                                 },
                                 {
                                     label: "B: Take Music. Follow the curiosity, even without knowing where it leads.",
-                                    outcome: "The Music module surprises you. Acoustics turns out to connect to the physics of sound in enclosed spaces — and you find yourself thinking about how hawker centre design affects noise levels and the dining experience. An unexpected thread appears. You bring it to Andy, who is intrigued."
+                                    outcome: "The Music module surprises you. Acoustics turns out to connect to the physics of sound in enclosed spaces — and you find yourself thinking about how hawker stalls are designed. An unexpected connection emerges. You've learned that curiosity sometimes leads somewhere useful, even if you didn't plan for it."
                                 },
                                 {
                                     label: "C: Ask Ms Tan whether it's better to choose what's useful now or what you're genuinely curious about.",
-                                    outcome: "Ms Tan smiles. \"Both matter,\" she says. \"But I'd ask you this: which one will you regret not taking?\" You sit with that for a moment."
+                                    outcome: "Ms Tan smiles. \"Both matter,\" she says. \"But I'd ask you this: which one will you regret not taking?\" You sit with that for a moment. It's not the answer you expected, but it's the question you needed."
                                 }
                             ],
                             reflectivePrompt: "When you make choices about learning, what do you tend to prioritise — usefulness, curiosity, or connection with others?"
@@ -560,30 +562,30 @@
                             id: 10,
                             number: 10,
                             question: "Looking Back, Looking Forward",
-                            preamble: "It's near the end of Secondary 4. You and Andy are putting the finishing touches on your portfolios. Ms Tan has asked you each to write a reflection — not just on the project, but on yourselves as learners.\n\nYou look back at everything: the reading corner in Primary 5, the canteen project in Secondary 1, the IPW, the electives, the moments of confusion and the moments of clarity.",
+                            preamble: "It's near the end of Secondary 4. You and Andy are putting the finishing touches on your portfolios. Ms Tan has asked you each to write a reflection — not just about the project, but about what the project has taught you about yourself as a learner, and as a person.",
                             options: [
                                 {
                                     label: "A: Write about the skills you've developed — the research methods, the data analysis, the collaboration strategies.",
-                                    outcome: "Your reflection is clear and well-evidenced. Ms Tan affirms your growth. She also asks, \"And what do these skills mean to you — beyond school?\" You find yourself thinking about Environmental Engineering. The word has been floating around in your mind for a while. Now it feels a little more real."
+                                    outcome: "Your reflection is clear and well-evidenced. Ms Tan affirms your growth. She also asks, \"And what do these skills mean to you — beyond school?\" You find yourself thinking about the future in a new way."
                                 },
                                 {
                                     label: "B: Write about the moments that were hardest — and what you learned from not giving up on them.",
-                                    outcome: "Your reflection is honest and a little raw. Ms Tan reads it carefully. \"This is the kind of reflection that takes courage,\" she says. \"You've learned something most people take much longer to learn — that difficulty is information, not failure.\""
+                                    outcome: "Your reflection is honest and a little raw. Ms Tan reads it carefully. \"This is the kind of reflection that takes courage,\" she says. \"You've learned something important about yourself. Hold onto that.\""
                                 },
                                 {
                                     label: "C: Write about who you are becoming — what kind of learner, what kind of person, and what kind of future you're starting to imagine for yourself.",
-                                    outcome: "Your reflection is the hardest to write, but the most yours. You write about the boy who was confused by shapes in Primary 5, and the teenager who is now genuinely excited about how science can help communities live more sustainably. Ms Tan writes in the margin: *\"This is what self-directed learning looks like when it works.\"*"
+                                    outcome: "Your reflection is the hardest to write, but the most yours. You write about the boy who was confused by shapes in Primary 5, and the teenager who is now asking complicated questions about sustainability and fairness. You're beginning to see a thread connecting all these moments."
                                 }
                             ],
                             reflectivePrompt: "What feels most true to where you are right now?"
                         }
                     ],
-                    endScene: "You close your portfolio. Andy is still writing beside you, his pen moving steadily. Outside the library window, the school is going about its afternoon — students heading to CCA, a teacher crossing the courtyard, the distant sound of a canteen in full swing.\n\nYou don't have everything figured out. But you know more about how you learn, what you care about, and where you want to go than you did three years ago. That's not nothing. That might, in fact, be everything."
+                    endScene: "You close your portfolio. Andy is still writing beside you, his pen moving steadily. Outside the library window, the school is going about its afternoon — students heading to CCA, teachers marking papers, the canteen preparing for the next rush. You think about everything that's happened since Primary 5. You've solved problems. You've learned from failure. You've discovered that learning isn't a straight line. It's a series of choices, and what matters is that you make them consciously, noticing as you go."
                 }
             ]
         };
 
-        const closingNote = "Throughout this game, you were never asked to get the \"right\" answer. You were asked to make choices — and to notice, even briefly, why you made them.\n\nThat noticing is the point. It's what Gabriel was learning to do, across every scene. And it's what self-directed learning actually looks like: not a perfect plan, but a growing awareness of yourself as someone who learns, adapts, reflects, and keeps going.\n\nWhat kind of learner are you becoming?";
+        const closingNote = "Throughout this game, you were never asked to get the \"right\" answer. You were asked to make choices — and to notice, even briefly, why you made them.\n\nThat noticing — that metacognition — is the most important skill you're learning. Not the Math. Not the research methods. Not the presentations. But the ability to watch yourself think, to ask why you chose what you chose, to see how your choices shape who you're becoming.\n\nGabriel's journey through school is over. But yours is just beginning. The choices you make in the next few years — about what you study, who you work with, what you care about — will shape the person you become. Make them consciously. And notice. That's everything.";
 
         // ============================================================================
         // GAME STATE
@@ -641,11 +643,21 @@
 
             const preamble = choice.preamble ? `<p>${choice.preamble}</p>` : '';
             const reflectivePrompt = choice.reflectivePrompt ? `<div class="reflective-prompt">${choice.reflectivePrompt}</div>` : '';
-            const optionsHtml = choice.options.map(opt => `
-                <button class="choice-btn" onclick="selectOption(${gameState.currentSceneId}, ${choiceIndex}, '${opt.label.split(':')[0].trim()}', \`${opt.outcome}\`)">
-                    ${opt.label}
-                </button>
-            `).join('');
+            
+            const optionsHtml = choice.options.map((opt, idx) => {
+                const optionLetter = opt.label.split(':')[0].trim();
+                // Escape special characters for safe HTML attribute insertion
+                const escapedOutcome = opt.outcome
+                    .replace(/\\/g, '\\\\')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+                
+                return `
+                    <button class="choice-btn" data-scene="${gameState.currentSceneId}" data-choice="${choiceIndex}" data-letter="${optionLetter}" data-outcome="${escapedOutcome}">
+                        ${opt.label}
+                    </button>
+                `;
+            }).join('');
 
             return `
                 <div class="choice-point">
@@ -701,6 +713,7 @@
             const scene = storyData.scenes.find(s => s.id === sceneId);
             const choiceHtml = renderChoicePoint(scene, choiceIndex);
             document.getElementById('gameFlow').innerHTML += choiceHtml;
+            attachChoiceListeners();
             window.scrollTo(0, 0);
         }
 
@@ -776,16 +789,37 @@
             document.getElementById('choiceLog').innerHTML = logHtml || '<p style="color: #999; font-size: 13px;">Your choices will appear here.</p>';
         }
 
+        function attachChoiceListeners() {
+            document.querySelectorAll('.choice-btn').forEach(btn => {
+                btn.removeEventListener('click', handleChoiceClick);
+                btn.addEventListener('click', handleChoiceClick);
+            });
+        }
+
+        function handleChoiceClick(e) {
+            const btn = e.target;
+            const sceneId = parseInt(btn.dataset.scene);
+            const choiceIndex = parseInt(btn.dataset.choice);
+            const optionLetter = btn.dataset.letter;
+            const outcome = btn.dataset.outcome;
+            
+            selectOption(sceneId, choiceIndex, optionLetter, outcome);
+        }
+
         // ============================================================================
         // NAVIGATION & STARTUP
         // ============================================================================
 
         function startGame() {
             renderScene(1);
+            attachChoiceListeners();
         }
 
         // Initialize on load
-        document.addEventListener('DOMContentLoaded', renderWelcome);
+        document.addEventListener('DOMContentLoaded', function() {
+            renderWelcome();
+            attachChoiceListeners();
+        });
     </script>
 </body>
 </html>
