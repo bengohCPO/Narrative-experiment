@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Learning Journey: A Story of Gabriel — and You</title>
     <style>
+        :root {
+            --primary: #1a5f7a;
+            --primary-dark: #15495e;
+            --primary-darker: #0f3545;
+            --accent: #d4a574;
+            --accent-hover: #c89560;
+            --text: #2c3e50;
+            --text-light: #666;
+            --bg-light: #f5f1e8;
+            --bg-lighter: #ede8e0;
+            --white: #ffffff;
+            --border-radius: 12px;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,8 +28,8 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
-            background: linear-gradient(135deg, #f5f1e8 0%, #ede8e0 100%);
-            color: #2c3e50;
+            background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-lighter) 100%);
+            color: var(--text);
             line-height: 1.8;
             min-height: 100vh;
         }
@@ -29,18 +44,18 @@
 
         .main-content {
             flex: 1;
-            background: white;
-            border-radius: 12px;
+            background: var(--white);
+            border-radius: var(--border-radius);
             padding: 40px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            box-shadow: var(--shadow);
         }
 
         .sidebar {
             width: 280px;
-            background: white;
-            border-radius: 12px;
+            background: var(--white);
+            border-radius: var(--border-radius);
             padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            box-shadow: var(--shadow);
             height: fit-content;
             position: sticky;
             top: 20px;
@@ -49,11 +64,11 @@
         .sidebar-title {
             font-size: 14px;
             font-weight: 700;
-            color: #1a5f7a;
+            color: var(--primary);
             text-transform: uppercase;
             letter-spacing: 0.8px;
             margin-bottom: 15px;
-            border-bottom: 2px solid #1a5f7a;
+            border-bottom: 2px solid var(--primary);
             padding-bottom: 10px;
         }
 
@@ -62,19 +77,21 @@
             flex-direction: column;
             gap: 10px;
             font-size: 13px;
+            max-height: 400px;
+            overflow-y: auto;
         }
 
         .choice-log-item {
             padding: 8px 10px;
             background: #f0f4f8;
-            border-left: 3px solid #d4a574;
+            border-left: 3px solid var(--accent);
             border-radius: 4px;
-            color: #2c3e50;
+            color: var(--text);
         }
 
         .choice-log-label {
             font-weight: 600;
-            color: #1a5f7a;
+            color: var(--primary);
             display: block;
             margin-bottom: 2px;
         }
@@ -86,26 +103,26 @@
 
         h1 {
             font-size: 2.5em;
-            color: #1a5f7a;
+            color: var(--primary);
             margin-bottom: 10px;
             line-height: 1.2;
         }
 
         h2 {
             font-size: 1.8em;
-            color: #1a5f7a;
+            color: var(--primary);
             margin: 30px 0 20px 0;
         }
 
         h3 {
             font-size: 1.3em;
-            color: #2c5f7a;
+            color: var(--text);
             margin: 20px 0 15px 0;
         }
 
         .subtitle {
             font-size: 1.1em;
-            color: #666;
+            color: var(--text-light);
             font-style: italic;
             margin-bottom: 30px;
         }
@@ -119,17 +136,17 @@
         .scene-setting {
             background: linear-gradient(135deg, #f9f7f4 0%, #f5f1e8 100%);
             padding: 20px;
-            border-left: 4px solid #1a5f7a;
+            border-left: 4px solid var(--primary);
             margin: 25px 0;
             border-radius: 6px;
             font-style: italic;
-            color: #2c3e50;
+            color: var(--text);
         }
 
         .reflective-prompt {
             background: linear-gradient(135deg, #fef3e6 0%, #fde9d8 100%);
             padding: 18px;
-            border-left: 4px solid #d4a574;
+            border-left: 4px solid var(--accent);
             margin: 20px 0;
             border-radius: 6px;
             font-style: italic;
@@ -142,7 +159,7 @@
             padding: 20px;
             border-radius: 6px;
             margin: 20px 0;
-            border-left: 4px solid #d4a574;
+            border-left: 4px solid var(--accent);
             line-height: 1.8;
         }
 
@@ -151,7 +168,7 @@
             padding: 25px;
             border-radius: 8px;
             margin: 30px 0;
-            border-left: 4px solid #1a5f7a;
+            border-left: 4px solid var(--primary);
             font-size: 16px;
             line-height: 1.8;
         }
@@ -166,7 +183,7 @@
         .choice-question {
             font-size: 1.1em;
             font-weight: 600;
-            color: #1a5f7a;
+            color: var(--primary);
             margin-bottom: 15px;
         }
 
@@ -178,8 +195,8 @@
         }
 
         .choice-btn {
-            background: #1a5f7a;
-            color: white;
+            background: var(--primary);
+            color: var(--white);
             border: none;
             padding: 12px 18px;
             border-radius: 6px;
@@ -191,18 +208,23 @@
         }
 
         .choice-btn:hover {
-            background: #15495e;
+            background: var(--primary-dark);
             transform: translateX(4px);
             box-shadow: 0 4px 8px rgba(26, 95, 122, 0.2);
         }
 
         .choice-btn:active {
-            background: #0f3545;
+            background: var(--primary-darker);
+        }
+
+        .choice-btn:focus {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
         }
 
         .continue-btn {
-            background: #d4a574;
-            color: white;
+            background: var(--accent);
+            color: var(--white);
             border: none;
             padding: 12px 24px;
             border-radius: 6px;
@@ -214,14 +236,19 @@
         }
 
         .continue-btn:hover {
-            background: #c89560;
+            background: var(--accent-hover);
             box-shadow: 0 4px 8px rgba(212, 165, 116, 0.3);
+        }
+
+        .continue-btn:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
         }
 
         .section-divider {
             margin: 40px 0;
             height: 2px;
-            background: linear-gradient(to right, transparent, #1a5f7a, transparent);
+            background: linear-gradient(to right, transparent, var(--primary), transparent);
             border: none;
         }
 
@@ -230,5 +257,260 @@
             padding: 60px 40px;
         }
 
-        .welcome-screen h*
-
+        .welcome-screen h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .welcome-screen p {
+            font-size: 1.1em;
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .scene {
+            display: none;
+        }
+
+        .scene.active {
+            display: block;
+        }
+
+        .welcome-screen.active {
+            display: block;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: static;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            .main-content {
+                padding: 25px;
+            }
+
+            .welcome-screen {
+                padding: 40px 20px;
+            }
+
+            .welcome-screen h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-content">
+            <!-- Welcome Screen -->
+            <div id="welcome" class="welcome-screen active">
+                <h1>Your Learning Journey</h1>
+                <p class="subtitle">A Story of Gabriel — and You</p>
+                <p>Step into a narrative where your choices shape the story. Follow Gabriel through a pivotal moment in his learning journey, and reflect on your own path.</p>
+                <button class="continue-btn" onclick="startStory()">Begin the Story</button>
+            </div>
+
+            <!-- Scene 1: The Classroom -->
+            <div id="scene1" class="scene">
+                <h2>The Classroom</h2>
+                <div class="scene-setting">
+                    <p>Gabriel sits at his desk, palms slightly sweaty. The instructor has just announced a challenging project that will define the next four weeks. Everyone around him seems confident, pulling out notebooks and jotting down ideas. Gabriel feels a wave of doubt.</p>
+                </div>
+                <p>The project requires learning a new technology stack that he's never worked with before. His first instinct is panic—but he remembers something his mentor once told him: "The way forward isn't to know everything; it's to know how to learn."</p>
+                <div class="reflective-prompt">
+                    <strong>What does Gabriel do?</strong>
+                </div>
+                <div class="choice-point">
+                    <div class="choice-question">How would you approach this situation?</div>
+                    <div class="choice-buttons">
+                        <button class="choice-btn" onclick="makeChoice('scene1', 'Dive in immediately and figure it out through trial and error', 'scene2a')">
+                            Dive in immediately and figure it out through trial and error
+                        </button>
+                        <button class="choice-btn" onclick="makeChoice('scene1', 'Spend a week learning the fundamentals before starting', 'scene2b')">
+                            Spend a week learning the fundamentals before starting
+                        </button>
+                        <button class="choice-btn" onclick="makeChoice('scene1', 'Reach out to experienced colleagues for guidance and resources', 'scene2c')">
+                            Reach out to experienced colleagues for guidance and resources
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scene 2a: Trial and Error Path -->
+            <div id="scene2a" class="scene">
+                <h2>Learning by Doing</h2>
+                <div class="scene-setting">
+                    <p>Gabriel decides to jump in headfirst. He opens a blank project file and starts coding. The first hours are rough—lots of errors, debugging, and dead ends. But something unexpected happens.</p>
+                </div>
+                <p>With each mistake, Gabriel gains intuition about how the system works. He doesn't just memorize documentation; he understands the *why* behind design decisions. By day five, his code is functional. By week three, he's building features others haven't imagined.</p>
+                <div class="outcome-text">
+                    <strong>The Outcome:</strong> Gabriel's project is creative and deep, though it took longer than expected. He's now confident in this technology, having learned through real-world problem-solving.
+                </div>
+                <div class="reflective-prompt">
+                    <strong>Reflection:</strong> What did you learn about the balance between diving in and taking time to prepare?
+                </div>
+                <button class="continue-btn" onclick="showScene('scene3a')">Continue the Story</button>
+            </div>
+
+            <!-- Scene 2b: Learning Fundamentals Path -->
+            <div id="scene2b" class="scene">
+                <h2>Building Strong Foundations</h2>
+                <div class="scene-setting">
+                    <p>Gabriel decides to invest a full week in learning the fundamentals. He works through tutorials, reads documentation, and builds small practice projects. It feels like slow progress.</p>
+                </div>
+                <p>But when week two arrives and the real project begins, something remarkable happens. His foundation is solid. He understands the architecture, knows where to look for answers, and avoids common pitfalls. His progress accelerates, and his code is clean and maintainable.</p>
+                <div class="outcome-text">
+                    <strong>The Outcome:</strong> Gabriel delivers ahead of schedule with polished, professional code. More importantly, he's equipped to tackle related technologies quickly in the future.
+                </div>
+                <div class="reflective-prompt">
+                    <strong>Reflection:</strong> How can investing time upfront save time and frustration later?
+                </div>
+                <button class="continue-btn" onclick="showScene('scene3b')">Continue the Story</button>
+            </div>
+
+            <!-- Scene 2c: Seeking Guidance Path -->
+            <div id="scene2c" class="scene">
+                <h2>The Power of Community</h2>
+                <div class="scene-setting">
+                    <p>Gabriel reaches out to three experienced colleagues. They each recommend resources, share lessons from their own learning journeys, and offer to review his code as he progresses.</p>
+                </div>
+                <p>What Gabriel discovers is that learning isn't a solo endeavor. With guidance, he avoids common mistakes, learns best practices from day one, and gains confidence from knowing he has support. His colleagues also benefit—teaching Gabriel forces them to articulate and refine their own knowledge.</p>
+                <div class="outcome-text">
+                    <strong>The Outcome:</strong> Gabriel completes the project successfully, having built meaningful connections along the way. More importantly, he's learned that growth happens within a community.
+                </div>
+                <div class="reflective-prompt">
+                    <strong>Reflection:</strong> Who in your own learning journey can you turn to for guidance? Who might benefit from your experience?
+                </div>
+                <button class="continue-btn" onclick="showScene('scene3c')">Continue the Story</button>
+            </div>
+
+            <!-- Final Reflection Scenes -->
+            <div id="scene3a" class="scene">
+                <h2>Gabriel's Reflection: Three Months Later</h2>
+                <p>Gabriel looks back on the project with satisfaction. He didn't just complete it; he mastered a new technology through trial and error. The experience taught him something crucial: <strong>resilience matters more than perfection</strong>.</p>
+                <div class="scene-end">
+                    <h3>Your Learning Moment</h3>
+                    <p>Think of a time when you learned something new by simply diving in. What did you discover about yourself in the process? Did you face obstacles? How did you overcome them?</p>
+                </div>
+                <button class="continue-btn" onclick="showScene('ending')">See the Full Picture</button>
+            </div>
+
+            <div id="scene3b" class="scene">
+                <h2>Gabriel's Reflection: Three Months Later</h2>
+                <p>Gabriel reflects on how much his initial investment paid off. He didn't just complete the project faster; he laid a foundation for continued growth. He realizes: <strong>the most efficient path is often the one that doesn't skip the basics</strong>.</p>
+                <div class="scene-end">
+                    <h3>Your Learning Moment</h3>
+                    <p>Think of a time when you took the slower route to build a stronger foundation. How did that patience serve you? What would have happened if you'd rushed?</p>
+                </div>
+                <button class="continue-btn" onclick="showScene('ending')">See the Full Picture</button>
+            </div>
+
+            <div id="scene3c" class="scene">
+                <h2>Gabriel's Reflection: Three Months Later</h2>
+                <p>Gabriel still connects with his colleagues regularly. What started as a project has become an ongoing mentorship. He understands now: <strong>the people you learn with matter as much as what you learn</strong>.</p>
+                <div class="scene-end">
+                    <h3>Your Learning Moment</h3>
+                    <p>Who has been your greatest teacher? What did they teach you beyond the subject matter? How can you pay it forward?</p>
+                </div>
+                <button class="continue-btn" onclick="showScene('ending')">See the Full Picture</button>
+            </div>
+
+            <!-- Ending -->
+            <div id="ending" class="scene">
+                <h2>The End</h2>
+                <div class="scene-end">
+                    <p>Gabriel's journey is one example, but your journey is equally important. Learning isn't about following a single "right" path—it's about understanding yourself: How do you learn best? What challenges motivate you? Who lifts you up?</p>
+                    <p style="margin-top: 20px;">Your choices throughout this narrative reveal something about your learning philosophy. There's no "correct" answer—each path has value. The goal is reflection.</p>
+                </div>
+                <button class="continue-btn" onclick="restartStory()">Start Over</button>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-title">Your Choices</div>
+            <div id="choiceLog" class="choice-log">
+                <p style="color: #999; font-size: 12px; margin-top: 10px;">Your choices will appear here</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let choices = [];
+
+        function makeChoice(sceneId, choiceText, nextSceneId) {
+            // Log the choice
+            choices.push({
+                scene: sceneId,
+                choice: choiceText
+            });
+            updateChoiceLog();
+            
+            // Transition to next scene
+            showScene(nextSceneId);
+        }
+
+        function showScene(sceneId) {
+            // Hide all scenes
+            document.querySelectorAll('.scene, .welcome-screen').forEach(scene => {
+                scene.classList.remove('active');
+            });
+            
+            // Show the target scene
+            const targetScene = document.getElementById(sceneId);
+            if (targetScene) {
+                targetScene.classList.add('active');
+                // Scroll to top of main content
+                document.querySelector('.main-content').scrollTop = 0;
+            }
+        }
+
+        function startStory() {
+            choices = [];
+            updateChoiceLog();
+            showScene('scene1');
+        }
+
+        function restartStory() {
+            startStory();
+        }
+
+        function updateChoiceLog() {
+            const choiceLog = document.getElementById('choiceLog');
+            
+            if (choices.length === 0) {
+                choiceLog.innerHTML = '<p style="color: #999; font-size: 12px; margin-top: 10px;">Your choices will appear here</p>';
+                return;
+            }
+            
+            choiceLog.innerHTML = choices.map((choice, index) => `
+                <div class="choice-log-item">
+                    <span class="choice-log-label">Choice ${index + 1}</span>
+                    <span class="choice-log-answer">${choice.choice}</span>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
